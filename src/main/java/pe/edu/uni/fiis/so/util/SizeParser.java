@@ -7,7 +7,7 @@ import java.util.List;
  */
 public class SizeParser {
 
-    public long parse(List<String> args) {
+    public static long parse(List<String> args) {
         return 10;
     }
 }
