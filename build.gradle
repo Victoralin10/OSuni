@@ -1,0 +1,35 @@
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'idea'
+
+mainClassName = 'pe.edu.uni.fiis.so.Main'
+sourceCompatibility = '1.8'
+
+group 'pe.edu.uni.fiis.so'
+version '1.0'
+
+jar {
+    manifest {
+        attributes('Main-Class': 'pe.edu.uni.fiis.so.Main')
+    }
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs "src/main/res"
+        }
+    }
+}
+
+run {
+    standardInput = System.in
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile 'junit:junit:4.12'
+}
