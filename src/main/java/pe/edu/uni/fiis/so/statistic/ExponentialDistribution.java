@@ -28,4 +28,9 @@ public class ExponentialDistribution implements StatisticModel {
 
         return num;
     }
+
+    @Override
+    public String nextString() {
+        return this.nexDoubleRandom() + "";
+    }
 }

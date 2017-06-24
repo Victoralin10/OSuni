@@ -1,6 +1,5 @@
 package pe.edu.uni.fiis.so.statistic;
 
-import javax.print.attribute.standard.RequestingUserName;
 
 /**
  * Created by Luis Angel on 21/06/2017.
@@ -35,5 +34,10 @@ public class NormalDistribution implements StatisticModel{
         }
 
         return num;
+    }
+
+    @Override
+    public String nextString() {
+        return this.nexDoubleRandom() + "";
     }
 }

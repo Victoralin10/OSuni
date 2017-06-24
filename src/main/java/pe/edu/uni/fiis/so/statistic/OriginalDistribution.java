@@ -1,9 +1,6 @@
 package pe.edu.uni.fiis.so.statistic;
 
 
-import java.util.ArrayList;
-import java.util.StringTokenizer;
-
 /**
  * Created by Luis Angel on 21/06/2017.
  */
@@ -15,26 +12,21 @@ public class OriginalDistribution implements StatisticModel {
         this.numbers = numbers;
     }
 
-    public static ArrayList<String> parseLine(String str){
-        ArrayList<String> ListNum = null;
+    public static String[] parseLine(String str) {
+        String[] ListNum = null;
 
-        String type = str.substring(0,3);
+        String type = str.substring(0, 3);
 
 
-        if (type.equals("int") || type.equals("str")){
+        if (type.equals("int") || type.equals("str")) {
 
             str = str.substring(4);
-            str = str.replace(" ","");
-            str = str.substring(0,str.indexOf("]"));
+            str = str.replace(" ", "");
+            str = str.substring(0, str.indexOf("]"));
 
-            StringTokenizer st = new StringTokenizer(str,",");
+            ListNum = str.split(",");
 
-            while(st.hasMoreTokens()){
-                ListNum.add(st.nextToken());
-                //System.out.println(st.nextToken());
-            }
-
-        }else{
+        } else {
             System.out.println("Cadena no valida");
         }
         return ListNum;
@@ -43,10 +35,10 @@ public class OriginalDistribution implements StatisticModel {
 
     @Override
     public long nextLongRandom() {
-        ArrayList<String> num = parseLine(numbers);
+        String[] num = parseLine(numbers);
         double r = Math.random();
-        int pos = (int)(r * (num.size()));
-        return Long.parseLong(num.get(pos));
+        int pos = (int) (r * (num.length));
+        return Long.parseLong(num[pos]);
     }
 
     @Override
@@ -54,6 +46,9 @@ public class OriginalDistribution implements StatisticModel {
         return 0;
     }
 
-
+    @Override
+    public String nextString() {
+        return this.nextLongRandom() + "";
+    }
 }
 

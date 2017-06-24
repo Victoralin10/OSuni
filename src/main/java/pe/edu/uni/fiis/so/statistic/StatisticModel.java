@@ -8,4 +8,6 @@ public interface StatisticModel {
     long nextLongRandom();
 
     double nexDoubleRandom();
+
+    String nextString();
 }

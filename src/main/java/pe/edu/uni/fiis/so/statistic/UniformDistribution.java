@@ -32,4 +32,9 @@ public class UniformDistribution implements StatisticModel{
 
         return num;
     }
+
+    @Override
+    public String nextString() {
+        return this.nexDoubleRandom() + "";
+    }
 }

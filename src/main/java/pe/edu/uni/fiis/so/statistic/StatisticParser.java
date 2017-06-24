@@ -12,7 +12,7 @@ public class StatisticParser {
 
         String type = null;
         StatisticModel sm = null;
-        ArrayList<String> myList = null;
+        String[] myList = null;
         if (line.contains("(")){
             type = line.substring(0,line.indexOf("("));
         }else if (line.contains("[")){
@@ -23,34 +23,33 @@ public class StatisticParser {
             case "uniform":
                 line = line.substring(8);
                 line = line.substring(0,line.indexOf(")"));
-                StringTokenizer st = new StringTokenizer(line,",");
-
-                while(st.hasMoreTokens()){
-                    myList.add(st.nextToken());
-                }
-                sm = new UniformDistribution(Integer.parseInt(myList.get(0)),Integer.parseInt(myList.get(1)));
+                line = line.replace(" ","");
+                myList = line.split(",");
+                sm = new UniformDistribution(Integer.parseInt(myList[0]),Integer.parseInt(myList[1]));
                 break;
             case "normal":
                 line = line.substring(7);
                 line = line.substring(0,line.indexOf(")"));
-                StringTokenizer st2 = new StringTokenizer(line,",");
-
-                while(st2.hasMoreTokens()){
-                    myList.add(st2.nextToken());
-                }
-                sm = new NormalDistribution(Double.parseDouble(myList.get(0)),Double.parseDouble(myList.get(1)));
+                line = line.replace(" ","");
+                myList = line.split(",");
+                sm = new NormalDistribution(Double.parseDouble(myList[0]),Double.parseDouble(myList[1]));
                 break;
             case "exp":
                 line = line.substring(4);
                 line = line.substring(0,line.indexOf(")"));
-
+                line = line.replace(" ","");
                 sm = new ExponentialDistribution(Double.parseDouble(line));
                 break;
             case "int":
+                sm = new OriginalDistribution(line);
+                break;
+            case "str":
                 sm = new OriginalDistribution(line);
                 break;
         }
 
         return sm;
     }
+
 }
+
