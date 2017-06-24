@@ -11,4 +11,13 @@ public class TimeParser {
 
         return 0;
     }
+
+    public static long parse(String line) {
+
+        return 0;
+    }
+
+    public static String toString(long milliseconds) {
+        return "";
+    }
 }

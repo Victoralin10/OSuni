@@ -11,6 +11,10 @@ import java.util.TreeMap;
  * Created by vcueva on 6/21/17.
  */
 public class Simulation {
+    public static final int SIMULATION_BEGIN_STATE = 1;
+    public static final int SIMULATION_RUNNING_STATE = 2;
+    public static final int SIMULATION_END_STATE = 4;
+
     private static Simulation instance;
 
     public static Simulation getInstance() {
@@ -25,12 +29,24 @@ public class Simulation {
 
     private String[] eventsName = new String[]{""};
 
+    private int status;
+
     public Simulation() {
         listeners = new TreeMap<>();
 
         for (String anEventsName : eventsName) {
             listeners.put(anEventsName, new ArrayList<>());
         }
+
+        status = SIMULATION_BEGIN_STATE;
+    }
+
+    public void start() {
+        if (status != SIMULATION_BEGIN_STATE) {
+            throw new RuntimeException("Incorrect simulation state.");
+        }
+
+        status = SIMULATION_RUNNING_STATE;
     }
 
     public synchronized void on(SimulationActionListener listener) {
@@ -55,13 +71,15 @@ public class Simulation {
         }
 
         for (SimulationActionListener listener: listeners.get(eventCode)) {
-            new Thread(() -> {
+            Thread t = new Thread(() -> {
                 try {
                     listener.actionPerformed(event);
                 } catch (Exception | Error ex) {
                     ex.printStackTrace();
                 }
-            }).start();
+            });
+            t.setPriority(Thread.MAX_PRIORITY);
+            t.start();
         }
     }
 }

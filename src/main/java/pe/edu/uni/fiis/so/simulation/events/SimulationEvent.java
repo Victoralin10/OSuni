@@ -7,7 +7,7 @@ import java.util.TreeMap;
  * Created by vcueva on 6/21/17.
  */
 
-public abstract class SimulationEvent {
+public class SimulationEvent {
 
     private Map <String, Object> values;
 

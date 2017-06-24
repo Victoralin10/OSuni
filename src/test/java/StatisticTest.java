@@ -23,10 +23,10 @@ public class StatisticTest {
 
     @Test
     public void testExponential() {
-        StatisticModel sm = StatisticParser.parse("exp(-1.5)");
-        Assert.assertNotNull("Parsing exp(-1.5)", sm);
+        StatisticModel sm = StatisticParser.parse("exp(1.5)");
+        Assert.assertNotNull("Parsing exp(1.5)", sm);
 
-        System.out.println("Testing: exp(-1.5)");
+        System.out.println("Testing: exp(1.5)");
 
         for (int i = 0; i < 200; i++) {
             double v = sm.nexDoubleRandom();
