@@ -20,6 +20,11 @@ sourceSets {
             srcDirs "src/main/res"
         }
     }
+    test {
+        resources {
+            srcDirs "src/test/res"
+        }
+    }
 }
 
 run {
