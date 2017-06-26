@@ -1,17 +1,10 @@
 package util;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExternalResource;
-import org.junit.rules.TemporaryFolder;
 import pe.edu.uni.fiis.so.util.GlobalConfig;
 
-import java.io.File;
-import java.util.ResourceBundle;
-
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 
 /**
  * Created by vcueva on 6/25/17.

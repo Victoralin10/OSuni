@@ -5,7 +5,7 @@ package pe.edu.uni.fiis.so.simulation.memory;
  */
 public class Memory {
 
-    public static final long DEFAULT_MEMORY_SIZE = 8L * 1024 * 1024*1024; // 8GB
+    public static final long DEFAULT_MEMORY_SIZE = 8L * 1024 * 1024 * 1024; // 8GB
     public static final int DEFAULT_PAGE_SIZE = 4 * 1024 * 1024; // 4KB
 
     private long memorySize;

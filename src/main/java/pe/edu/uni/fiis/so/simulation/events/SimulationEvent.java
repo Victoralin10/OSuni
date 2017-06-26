@@ -9,7 +9,7 @@ import java.util.TreeMap;
 
 public class SimulationEvent {
 
-    private Map <String, Object> values;
+    private Map<String, Object> values;
 
     public SimulationEvent() {
         values = new TreeMap<>();
@@ -31,7 +31,7 @@ public class SimulationEvent {
         return (Long) values.get(key);
     }
 
-    public Float getFloat(String key){
+    public Float getFloat(String key) {
         return (Float) values.get(key);
     }
 

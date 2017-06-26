@@ -1,6 +1,9 @@
 package util;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import pe.edu.uni.fiis.so.util.TimeParser;
 
 import java.util.ArrayList;
@@ -40,7 +43,7 @@ public class TimeParserTest {
 
     @After
     public void testToString() {
-        long[] input = new long[]{117, 1017, 2*60*100 + 29*100 + 15, 17*60*60*100 + 47*100};
+        long[] input = new long[]{117, 1017, 2 * 60 * 100 + 29 * 100 + 15, 17 * 60 * 60 * 100 + 47 * 100};
         String[] expectedOut = new String[]{"117ms", "1s 17ms", "2m 29s 15ms", "17h 47s"};
 
         for (int i = 0; i < input.length; i++) {

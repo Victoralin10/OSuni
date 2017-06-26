@@ -47,7 +47,7 @@ public class SizeParserTest {
 
     @Test
     public void testToString() {
-        long[] input = new long[]{117, 15<<10, (7<<20) + 17, (15L<<30) + (12<<10), 7L<<40};
+        long[] input = new long[]{117, 15 << 10, (7 << 20) + 17, (15L << 30) + (12 << 10), 7L << 40};
         String[] expectedOut = new String[]{"117b", "15Kb", "7Mb 17b", "15Gb 12Kb", "7Tb"};
 
         for (int i = 0; i < input.length; i++) {

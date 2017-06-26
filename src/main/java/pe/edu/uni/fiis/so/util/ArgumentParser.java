@@ -7,7 +7,7 @@ import java.util.List;
  */
 public class ArgumentParser {
 
-    public static List <String> parse(String line) {
+    public static List<String> parse(String line) {
 
         return null;
     }

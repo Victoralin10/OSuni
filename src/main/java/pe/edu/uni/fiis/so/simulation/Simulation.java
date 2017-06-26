@@ -16,19 +16,8 @@ public class Simulation {
     public static final int SIMULATION_END_STATE = 4;
 
     private static Simulation instance;
-
-    public static Simulation getInstance() {
-        if (instance == null) {
-            instance = new Simulation();
-        }
-
-        return instance;
-    }
-
-    private Map <String, ArrayList <SimulationActionListener> > listeners;
-
+    private Map<String, ArrayList<SimulationActionListener>> listeners;
     private String[] eventsName = new String[]{""};
-
     private int status;
 
     public Simulation() {
@@ -39,6 +28,14 @@ public class Simulation {
         }
 
         status = SIMULATION_BEGIN_STATE;
+    }
+
+    public static Simulation getInstance() {
+        if (instance == null) {
+            instance = new Simulation();
+        }
+
+        return instance;
     }
 
     public void start() {
@@ -70,7 +67,7 @@ public class Simulation {
             throw new RuntimeException("Event Key not found.");
         }
 
-        for (SimulationActionListener listener: listeners.get(eventCode)) {
+        for (SimulationActionListener listener : listeners.get(eventCode)) {
             Thread t = new Thread(() -> {
                 try {
                     listener.actionPerformed(event);

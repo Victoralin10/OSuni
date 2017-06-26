@@ -7,6 +7,6 @@ package pe.edu.uni.fiis.so.simulation;
 public class Kernel {
 
     public void run(Cpu cpu) {
-        
+
     }
 }

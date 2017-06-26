@@ -4,9 +4,9 @@ import java.util.Properties;
 
 /**
  * Created by vcueva on 6/24/17.
- *
+ * <p>
  * This module loads the configuration of the simulation.
- *
+ * <p>
  * Contains methods for obtaining the values. If the key
  * does not exist the null value default should be returned.
  */
@@ -15,7 +15,7 @@ public class GlobalConfig {
     private static Properties properties = new Properties();
 
     public static void load(String file) {
-        
+
     }
 
     public static void setProperty(String key, String value) {
