@@ -12,7 +12,7 @@ public class ExponentialDistribution implements StatisticModel {
 
     @Override
     public long nextLongRandom() {
-        return (long)this.nexDoubleRandom();
+        return (long) this.nexDoubleRandom();
     }
 
     @Override
@@ -21,7 +21,7 @@ public class ExponentialDistribution implements StatisticModel {
         double r = Math.random();
 
         try {
-            num = -((1/lambdA) * Math.log(1 - r));
+            num = -((1 / lambdA) * Math.log(1 - r));
         } catch (RuntimeException e) {
             e.printStackTrace();
         }

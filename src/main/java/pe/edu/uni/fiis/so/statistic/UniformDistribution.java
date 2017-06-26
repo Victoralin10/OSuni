@@ -3,7 +3,7 @@ package pe.edu.uni.fiis.so.statistic;
 /**
  * Created by Luis Angel on 21/06/2017.
  */
-public class UniformDistribution implements StatisticModel{
+public class UniformDistribution implements StatisticModel {
 
     private int a, b;
 
@@ -14,7 +14,7 @@ public class UniformDistribution implements StatisticModel{
 
     @Override
     public long nextLongRandom() {
-        return (long)this.nexDoubleRandom();
+        return (long) this.nexDoubleRandom();
     }
 
     @Override
@@ -22,7 +22,7 @@ public class UniformDistribution implements StatisticModel{
         double r;
         double num = 0;
         try {
-            if(a<b){
+            if (a < b) {
                 r = Math.random();
                 num = a + r * (b - a);
             }

@@ -44,7 +44,7 @@ public class SizeParser {
             throw new RuntimeException("Invalid format");
         }
 
-        return Long.parseLong(n)*(1L<<(p*10));
+        return Long.parseLong(n) * (1L << (p * 10));
     }
 
     public static String toString(long size) {
@@ -52,7 +52,7 @@ public class SizeParser {
         int p = 0;
         long x;
         while (size > 0) {
-            x = size % (1<<10);
+            x = size % (1 << 10);
             if (x > 0) {
                 if (ans.length() > 0) {
                     ans.insert(0, " ");

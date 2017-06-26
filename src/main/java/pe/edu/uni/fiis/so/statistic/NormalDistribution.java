@@ -4,7 +4,7 @@ package pe.edu.uni.fiis.so.statistic;
 /**
  * Created by Luis Angel on 21/06/2017.
  */
-public class NormalDistribution implements StatisticModel{
+public class NormalDistribution implements StatisticModel {
 
     private double mu, sigma;
 
@@ -15,7 +15,7 @@ public class NormalDistribution implements StatisticModel{
 
     @Override
     public long nextLongRandom() {
-        return (long)this.nexDoubleRandom();
+        return (long) this.nexDoubleRandom();
     }
 
     @Override
@@ -24,11 +24,11 @@ public class NormalDistribution implements StatisticModel{
         double sum = 0;
 
         try {
-            for(int i = 0; i < 12; i++){
+            for (int i = 0; i < 12; i++) {
                 sum += Math.random();
             }
 
-            num = mu + sigma*(sum - 6);
+            num = mu + sigma * (sum - 6);
         } catch (RuntimeException e) {
             e.printStackTrace();
         }

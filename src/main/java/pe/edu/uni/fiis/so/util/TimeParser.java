@@ -12,7 +12,7 @@ public class TimeParser {
 
     public static long parse(List<String> args) {
         long ans = 0;
-        for (String arg: args) {
+        for (String arg : args) {
             ans += parse(arg);
         }
         return ans;
@@ -30,7 +30,7 @@ public class TimeParser {
         }
 
         long ans = Long.parseLong(line.substring(0, i + 1));
-        String sz = line.substring(i+1);
+        String sz = line.substring(i + 1);
         for (int j = 0; j < sizes.length; j++) {
             if (sz.equals(sizes[j])) {
                 break;
