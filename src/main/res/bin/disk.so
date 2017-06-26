@@ -1,0 +1,3 @@
+# name: System
+# size: 10Mb 5kb 2b
+print "Starting Disk Manger"

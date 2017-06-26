@@ -1,5 +1,7 @@
 package pe.edu.uni.fiis.so.util;
 
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Properties;
 
 /**
@@ -15,30 +17,46 @@ public class GlobalConfig {
     private static Properties properties = new Properties();
 
     public static void load(String file) {
-
+        try {
+            properties.load(new FileReader(file));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void setProperty(String key, String value) {
-
+        properties.setProperty(key, value);
     }
 
     public static String getString(String key, String defaultValue) {
-        return defaultValue;
+        return properties.getProperty(key, defaultValue);
     }
 
     public static int getInt(String key, int defaultValue) {
-        return defaultValue;
+        if (!properties.containsKey(key)) {
+            return defaultValue;
+        }
+        return Integer.parseInt(properties.getProperty(key).trim());
     }
 
     public static long getLong(String key, long defaultValue) {
-        return defaultValue;
+        if (!properties.containsKey(key)) {
+            return defaultValue;
+        }
+        return Long.parseLong(properties.getProperty(key).trim());
     }
 
     public static float getFloat(String key, float defaultValue) {
-        return defaultValue;
+        if (!properties.containsKey(key)) {
+            return defaultValue;
+        }
+        return Float.parseFloat(properties.getProperty(key).trim());
     }
 
     public static double getDouble(String key, double defaultValue) {
-        return defaultValue;
+        if (!properties.containsKey(key)) {
+            return defaultValue;
+        }
+        return Double.parseDouble(properties.getProperty(key).trim());
     }
 }

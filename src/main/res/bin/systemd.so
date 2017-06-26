@@ -1,0 +1,8 @@
+# name: System
+# size: 10MB
+print "Starting Kernel"
+run disk
+run network
+loop:
+sleep 10ms
+goto loop

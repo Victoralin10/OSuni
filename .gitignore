@@ -7,8 +7,6 @@ nbdist/
 .nb-gradle/
 ### Gradle template
 .gradle
-/build/
-
 # Ignore Gradle GUI config
 gradle-app.setting
 
@@ -22,8 +20,6 @@ gradle-app.setting
 # gradle/wrapper/gradle-wrapper.properties
 ### Java template
 # Compiled class file
-*.class
-
 # Log file
 *.log
 
@@ -34,10 +30,8 @@ gradle-app.setting
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.ear
-*.zip
 *.tar.gz
 *.rar
 
@@ -48,10 +42,7 @@ hs_err_pid*
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 # User-specific stuff:
-.idea/**/workspace.xml
 .idea/**/tasks.xml
-.idea/dictionaries
-
 # Sensitive or high-churn files:
 .idea/**/dataSources/
 .idea/**/dataSources.ids
@@ -59,12 +50,7 @@ hs_err_pid*
 .idea/**/dataSources.local.xml
 .idea/**/sqlDataSources.xml
 .idea/**/dynamic.xml
-.idea/**/uiDesigner.xml
-
 # Gradle:
-.idea/**/gradle.xml
-.idea/**/libraries
-
 # Mongo Explorer plugin:
 .idea/**/mongoSettings.xml
 
@@ -155,7 +141,6 @@ artifacts/
 *.tlh
 *.tmp
 *.tmp_proj
-*.log
 *.vspscc
 *.vssscc
 .builds
@@ -251,7 +236,6 @@ PublishScripts/
 # NuGet Packages
 *.nupkg
 # The packages folder can be ignored because of Package Restore
-**/packages/*
 # except build/, which is used as an MSBuild target.
 !**/packages/build/
 # Uncomment if necessary however generally it will be regenerated when needed
@@ -369,3 +353,4 @@ __pycache__/
 
 config.ini
 run.sh
+!src/main/res/bin
