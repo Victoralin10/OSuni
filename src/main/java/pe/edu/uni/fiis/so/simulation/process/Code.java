@@ -27,6 +27,15 @@ public class Code {
         }
     }
 
+    public Sentence getSentenceByAddress(int address) {
+        return sentences.get(address);
+    }
+
+    public Sentence getSentenceByLabel(String label) {
+        // To complete
+        return null;
+    }
+
     public List<Sentence> getSentences() {
         return sentences;
     }
