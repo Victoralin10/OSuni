@@ -40,6 +40,7 @@ public class Cpu implements Runnable {
 
         thread = new Thread(this);
         thread.setName("" + id);
+        thread.setDaemon(true);
         thread.start();
 
         setState(RUNNING);

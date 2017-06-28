@@ -19,6 +19,7 @@ public class Simulation {
     private Map<String, ArrayList<SimulationActionListener>> listeners;
     private String[] eventsName = new String[]{""};
     private int status;
+    private Machine machine;
 
     public Simulation() {
         listeners = new TreeMap<>();
@@ -39,11 +40,18 @@ public class Simulation {
     }
 
     public void start() {
-        if (status != SIMULATION_BEGIN_STATE) {
+        if (status == SIMULATION_RUNNING_STATE) {
             throw new RuntimeException("Incorrect simulation state.");
         }
 
+        machine = new Machine();
+        machine.powerOn();
         status = SIMULATION_RUNNING_STATE;
+    }
+
+    public void stop() {
+        machine.powerOff();
+        status = SIMULATION_END_STATE;
     }
 
     public synchronized void on(SimulationActionListener listener) {

@@ -12,6 +12,8 @@ public class Memory {
     private int pageSize;
 
     private int[] map;
+    private boolean[] readOnly;
+
     private int totalPages;
 
     private long freeMemorySize;
@@ -30,6 +32,7 @@ public class Memory {
 
         totalPages = (int) (memorySize / pageSize);
         map = new int[totalPages];
+        readOnly = new boolean[totalPages];
         for (int i = 0; i < totalPages; i++) {
             map[i] = -1;
         }
