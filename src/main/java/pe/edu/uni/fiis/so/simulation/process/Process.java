@@ -7,4 +7,6 @@ public class Process {
 
     private Code code;
 
+    public Process() {
+    }
 }
