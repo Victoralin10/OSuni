@@ -1,6 +1,8 @@
 package pe.edu.uni.fiis.so.simulation.process;
 
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by vcueva on 6/28/17.
@@ -11,6 +13,7 @@ public class Code {
 
     private List <Sentence> sentences;
     private int state;
+    private Map<String, Integer> labelMap;
 
     public Code() {
         this.state = STATE_LOADING;
@@ -25,6 +28,12 @@ public class Code {
         for (String line: lines) {
             sentences.add(new Sentence(line, nroLine++));
         }
+        labelMap = new TreeMap<>();
+        for (Sentence sentence: sentences) {
+            if (sentence.isLabel()){
+                labelMap.put(sentence.getFunction(),sentence.getAddress());
+            }
+        }
     }
 
     public Sentence getSentenceByAddress(int address) {
@@ -32,8 +41,7 @@ public class Code {
     }
 
     public Sentence getSentenceByLabel(String label) {
-        // To complete
-        return null;
+        return getSentenceByAddress(labelMap.get(label));
     }
 
     public List<Sentence> getSentences() {
