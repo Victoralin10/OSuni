@@ -11,8 +11,9 @@ public class Code {
     public static final int STATE_LOADING = 1;
     public static final int STATE_LOADED = 2;
 
-    private List <Sentence> sentences;
     private int state;
+
+    private List<Sentence> sentences;
     private Map<String, Integer> labelMap;
 
     public Code() {
@@ -25,13 +26,13 @@ public class Code {
         }
 
         int nroLine = 0;
-        for (String line: lines) {
+        for (String line : lines) {
             sentences.add(new Sentence(line, nroLine++));
         }
         labelMap = new TreeMap<>();
-        for (Sentence sentence: sentences) {
-            if (sentence.isLabel()){
-                labelMap.put(sentence.getFunction(),sentence.getAddress());
+        for (Sentence sentence : sentences) {
+            if (sentence.isLabel()) {
+                labelMap.put(sentence.getFunction(), sentence.getAddress());
             }
         }
     }

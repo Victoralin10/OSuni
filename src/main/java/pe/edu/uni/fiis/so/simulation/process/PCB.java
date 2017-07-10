@@ -1,6 +1,4 @@
-package pe.edu.uni.fiis.so.simulation;
-
-import pe.edu.uni.fiis.so.simulation.process.Process;
+package pe.edu.uni.fiis.so.simulation.process;
 
 /**
  * Created by vcueva on 6/28/17.
@@ -47,13 +45,18 @@ public class PCB implements Comparable {
      */
     private int priority;
 
-
+    
     private String name = "";
 
     /**
      * The time of the process running.
      */
     private long runningTime;
+
+    /**
+     * Program Counter.
+     */
+    private ProgramCounter programCounter;
 
     public PCB(String name) {
         this();
@@ -67,6 +70,8 @@ public class PCB implements Comparable {
         this.pid = nextPid;
         this.runningTime = 0;
         nextPid++;
+
+        this.programCounter = new ProgramCounter();
     }
 
     public int getPid() {
@@ -130,6 +135,10 @@ public class PCB implements Comparable {
 
     public String getName() {
         return name;
+    }
+
+    public ProgramCounter getProgramCounter() {
+        return programCounter;
     }
 
     @Override

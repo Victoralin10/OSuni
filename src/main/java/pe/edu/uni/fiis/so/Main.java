@@ -19,7 +19,7 @@ public class Main {
         Simulation.getInstance().start();
 
         try {
-            Thread.sleep(10*1000);
+            Thread.sleep(10 * 1000);
             Simulation.getInstance().stop();
         } catch (InterruptedException e) {
             e.printStackTrace();

@@ -1,3 +1,7 @@
 # name: System
 # size: 10Mb 5kb 2b
 print "Starting Disk Manger"
+loop:
+
+sleep 10ms 1s
+goto loop

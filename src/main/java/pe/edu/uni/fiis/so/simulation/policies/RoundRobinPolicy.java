@@ -7,10 +7,11 @@ import java.util.List;
 /**
  * Created by vcueva on 6/28/17.
  */
-public class FifoPolicy implements PolicyInterface {
+public class RoundRobinPolicy implements PolicyInterface {
 
     @Override
     public PCB next(List<PCB> readyQueue) {
+        
         return null;
     }
 }

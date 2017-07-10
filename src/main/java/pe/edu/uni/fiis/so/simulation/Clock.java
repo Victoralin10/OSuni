@@ -8,7 +8,7 @@ import java.util.TimerTask;
 /**
  * Created by vcueva on 6/28/17.
  */
-public class Clock  extends TimerTask {
+public class Clock extends TimerTask {
 
     /**
      * Default factor

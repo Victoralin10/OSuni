@@ -1,2 +1,6 @@
 # name: System
 # size: 10MB
+loop:
+
+sleep 10ms
+goto loop

@@ -1,5 +1,7 @@
 package pe.edu.uni.fiis.so.simulation;
 
+import pe.edu.uni.fiis.so.simulation.process.PCB;
+
 import java.util.ArrayList;
 import java.util.List;
 

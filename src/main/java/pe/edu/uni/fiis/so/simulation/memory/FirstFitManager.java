@@ -8,7 +8,7 @@ import java.util.List;
 public class FirstFitManager implements MemoryManagerInterface {
 
     @Override
-    public List<Integer> malloc(int size, int pid) {
+    public List<Integer> malloc(int size, int pid, boolean readOnly) {
         return null;
     }
 

@@ -12,9 +12,10 @@ public interface MemoryManagerInterface {
      *
      * @param size size of the memory to reserve.
      * @param pid  pid of the process.
+     * @param readOnly if true the memory is read only.
      * @return A list of the pages reserved.
      */
-    List<Integer> malloc(int size, int pid);
+    List<Integer> malloc(int size, int pid, boolean readOnly);
 
     /**
      * Free the pages if not are read only.

@@ -33,7 +33,7 @@ public class Machine {
     }
 
     public void powerOn() {
-        for (Cpu cpu: cpus) {
+        for (Cpu cpu : cpus) {
             cpu.start();
         }
         clock.start();

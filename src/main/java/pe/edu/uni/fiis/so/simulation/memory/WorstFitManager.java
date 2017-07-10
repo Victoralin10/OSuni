@@ -6,8 +6,9 @@ import java.util.List;
  * Created by vcueva on 6/24/17.
  */
 public class WorstFitManager implements MemoryManagerInterface {
+
     @Override
-    public List<Integer> malloc(int size, int pid) {
+    public List<Integer> malloc(int size, int pid, boolean readOnly) {
         return null;
     }
 
