@@ -31,6 +31,6 @@ public class ProgramCounter {
 
     public void advance() {
         currentAddress += delta;
-        // delta = 1;
+        delta = 1;
     }
 }

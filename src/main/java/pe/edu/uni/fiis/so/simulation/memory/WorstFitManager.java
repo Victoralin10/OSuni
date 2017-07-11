@@ -8,27 +8,17 @@ import java.util.List;
 public class WorstFitManager implements MemoryManagerInterface {
 
     @Override
-    public List<Integer> malloc(int size, int pid, boolean readOnly) {
+    public List<Integer> malloc(int size, int pid) {
         return null;
     }
 
     @Override
-    public boolean free(List<Integer> pages) {
+    public boolean free(int pid, List<Integer> pages) {
         return false;
     }
 
     @Override
-    public boolean free(int page) {
+    public boolean free(int pid, int page) {
         return false;
-    }
-
-    @Override
-    public void terminate(int pid) {
-
-    }
-
-    @Override
-    public void terminate(int pid, List<Integer> pageTable) {
-
     }
 }

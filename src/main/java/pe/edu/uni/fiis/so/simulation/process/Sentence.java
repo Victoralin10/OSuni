@@ -23,26 +23,29 @@ public class Sentence {
 
         List<String> lineList = null;
         if (line.startsWith("#")) {
-            this.type = TYPE_DESCRIPTION;
+            type = TYPE_DESCRIPTION;
             line = line.substring(1);
             List<String> desList = ArgumentParser.parse(line);
             desList.set(0, desList.get(0).replace(":", ""));
-            this.function = desList.get(0);
+            function = desList.get(0);
             desList.remove(0);
-            this.arguments = desList;
+            arguments = desList;
         } else {
             lineList = ArgumentParser.parse(line);
             if (lineList.isEmpty()) {
-                this.type = TYPE_BLANK;
-
-            } else if (lineList.size() == 1 && lineList.get(1).endsWith(":")) {
-                this.type = TYPE_LABEL;
+                type = TYPE_BLANK;
+            } else if (lineList.size() == 1 && lineList.get(0).endsWith(":")) {
+                type = TYPE_LABEL;
+                function = lineList.get(0);
+                function = function.substring(0, function.length() - 1);
             } else {
-                this.type = TYPE_INSTRUCTION;
+                type = TYPE_INSTRUCTION;
+                function = lineList.get(0);
             }
-            this.function = lineList.get(0);
-            lineList.remove(0);
-            this.arguments = lineList;
+            if (lineList.size() > 0) {
+                lineList.remove(0);
+            }
+            arguments = lineList;
         }
     }
 
@@ -64,5 +67,9 @@ public class Sentence {
 
     public boolean isLabel() {
         return type == TYPE_LABEL;
+    }
+
+    public boolean isBlank() {
+        return type == TYPE_BLANK;
     }
 }

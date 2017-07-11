@@ -1,5 +1,8 @@
 package pe.edu.uni.fiis.so.simulation.memory;
 
+import pe.edu.uni.fiis.so.util.Lib;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -7,28 +10,51 @@ import java.util.List;
  */
 public class FirstFitManager implements MemoryManagerInterface {
 
-    @Override
-    public List<Integer> malloc(int size, int pid, boolean readOnly) {
-        return null;
+    private Memory memory;
+
+    public FirstFitManager(Memory memory) {
+        this.memory = memory;
     }
 
     @Override
-    public boolean free(List<Integer> pages) {
-        return false;
+    public List<Integer> malloc(int size, int pid) {
+        if (size > memory.getFreeMemorySize()) {
+            return null;
+        }
+        ArrayList<Integer> ans = new ArrayList<>();
+        int[] map = memory.getMap();
+        for (int i = 0; i < memory.getTotalPages() && size > 0; i++) {
+            if (map[i] < 0) {
+                ans.add(i);
+                map[i] = pid;
+                size -= memory.getPageSize();
+            }
+        }
+        memory.setFreeMemorySize(memory.getFreeMemorySize() - memory.getPageSize()*ans.size());
+        return ans;
     }
 
     @Override
-    public boolean free(int page) {
-        return false;
+    public boolean free(int pid, List<Integer> pages) {
+        int[] map = memory.getMap();
+
+        for (Integer page: pages) {
+            map[page] = -1;
+            Lib.assertTrue(map[page] == pid);
+        }
+        memory.setFreeMemorySize(memory.getFreeMemorySize() + memory.getPageSize()*pages.size());
+
+        return true;
     }
 
     @Override
-    public void terminate(int pid) {
-
-    }
-
-    @Override
-    public void terminate(int pid, List<Integer> pageTable) {
-
+    public boolean free(int pid, int page) {
+        int[] map = memory.getMap();
+        if (pid != map[page]) {
+            return false;
+        }
+        map[page] = -1;
+        memory.setFreeMemorySize(memory.getFreeMemorySize() + memory.getPageSize());
+        return true;
     }
 }
