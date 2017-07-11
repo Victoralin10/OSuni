@@ -1,6 +1,6 @@
 package pe.edu.uni.fiis.so;
 
-import pe.edu.uni.fiis.so.simulation.Simulation;
+import pe.edu.uni.fiis.so.monitor.ConfigView;
 import pe.edu.uni.fiis.so.util.GlobalConfig;
 
 
@@ -15,19 +15,18 @@ public class Main {
      */
     public static void main(String[] args) {
         GlobalConfig.load("config.ini");
-        System.out.println("Hello World");
-        Simulation.getInstance().start();
 
-        Simulation.getInstance().getShellCommandsQueue().add("run program1.so");
-        Simulation.getInstance().getShellCommandsQueue().add("run program1.so");
-        Simulation.getInstance().getShellCommandsQueue().add("run program1.so");
-        Simulation.getInstance().getShellCommandsQueue().add("run program1.so");
-        Simulation.getInstance().getShellCommandsQueue().add("run program1.so");
         try {
-            Thread.sleep(60*1000);
-            Simulation.getInstance().stop();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(ConfigView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+
+        java.awt.EventQueue.invokeLater(() -> new ConfigView().setVisible(true));
     }
 }

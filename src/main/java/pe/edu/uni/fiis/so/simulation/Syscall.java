@@ -82,7 +82,7 @@ public class Syscall {
         myPcb.setProcess(process);
         myPcb.setPriority(-20);
 
-        _sleep(process.getSize()/(50<<20));
+        _sleep(process.getSize() / (50 << 20));
         kernel.getMemoryManager().malloc(process.getSize(), myPcb.getPid());
 
         kernel.getProcessManagerLock().lock();
@@ -158,7 +158,7 @@ public class Syscall {
             process.setCode(code);
             myPcb.setProcess(process);
 
-            _sleep(process.getSize()/(50<<20));
+            _sleep(process.getSize() / (50 << 20));
             kernel.getMemoryLock().lock();
             kernel.getMemoryManager().malloc(process.getSize(), myPcb.getPid());
             kernel.getMemoryLock().unlock();
@@ -197,7 +197,7 @@ public class Syscall {
         } else {
             poll.getInterruption().setInterruptionResult(InterruptionConstantes.SUCCESS);
             poll.getInterruption().markAsResolved();
-            aditional += poll.getSize()/(8<<20);
+            aditional += poll.getSize() / (8 << 20);
         }
 
         return 10 + aditional;
@@ -222,15 +222,15 @@ public class Syscall {
             memory.put("avance", 0);
             memory.put("state", 1);
         }
-        long ava  = (long) memory.get("avance");
+        long ava = (long) memory.get("avance");
         long left = peek.getSize() - ava;
         long v;
         if (peek.getType() == DiscServiceRequest.DISC_READ) {
-            v = GlobalConfig.getInt("disc.readSpeed", 50000000)/1000;
+            v = GlobalConfig.getInt("disc.readSpeed", 50000000) / 1000;
         } else {
-            v = GlobalConfig.getInt("disc.writeSpeed", 20000000)/1000;
+            v = GlobalConfig.getInt("disc.writeSpeed", 20000000) / 1000;
         }
-        long t = left/v;
+        long t = left / v;
         if (t + 10 > maxTime) {
             _sleep(maxTime - 10);
             memory.put("avance", ava + v);
@@ -265,15 +265,15 @@ public class Syscall {
             memory.put("avance", 0);
             memory.put("state", 1);
         }
-        long ava  = (long) memory.get("avance");
+        long ava = (long) memory.get("avance");
         long left = peek.getSize() - ava;
         long v;
         if (peek.getType() == peek.NET_DOWNLOAD) {
-            v = GlobalConfig.getInt("net.downloadSpeed", 50000000)/1000;
+            v = GlobalConfig.getInt("net.downloadSpeed", 50000000) / 1000;
         } else {
-            v = GlobalConfig.getInt("disc.uploadSpeed", 20000000)/1000;
+            v = GlobalConfig.getInt("disc.uploadSpeed", 20000000) / 1000;
         }
-        long t = left/v;
+        long t = left / v;
 
         if (t > maxTime - 10) {
             _sleep(maxTime - 10);
@@ -317,7 +317,7 @@ public class Syscall {
 
     private void _sleep(long t) {
         try {
-            Thread.sleep(t*kernel.getMachine().getClock().getFactor());
+            Thread.sleep(t * kernel.getMachine().getClock().getFactor());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

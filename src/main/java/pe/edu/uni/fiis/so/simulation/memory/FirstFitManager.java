@@ -1,7 +1,5 @@
 package pe.edu.uni.fiis.so.simulation.memory;
 
-import pe.edu.uni.fiis.so.util.Lib;
-
 import java.util.ArrayList;
 import java.util.List;
 
