@@ -1,5 +1,9 @@
 package pe.edu.uni.fiis.so.simulation.process;
 
+import pe.edu.uni.fiis.so.simulation.Kernel;
+import pe.edu.uni.fiis.so.simulation.Simulation;
+import pe.edu.uni.fiis.so.simulation.events.ProcessEvent;
+
 /**
  * Created by vcueva on 6/28/17.
  */
@@ -57,6 +61,8 @@ public class PCB implements Comparable {
      */
     private ProgramCounter programCounter;
 
+    private long lastCangeStatusTimestamp;
+
     public PCB(String name) {
         this();
         this.name = name;
@@ -71,6 +77,7 @@ public class PCB implements Comparable {
         nextPid++;
 
         this.programCounter = new ProgramCounter();
+        lastCangeStatusTimestamp = Kernel.instance.getMachine().getClock().getAbsoluteTime();
     }
 
     public int getPid() {
@@ -100,8 +107,14 @@ public class PCB implements Comparable {
         if (this.processStatus == processStatus) {
             return;
         }
+        long ct = Kernel.instance.getMachine().getClock().getAbsoluteTime();
+        if (this.processStatus == RUNNING) {
+            runningTime += ct - lastCangeStatusTimestamp;
+        }
 
         this.processStatus = processStatus;
+        Simulation.getInstance().dispatchEvent("process.changeStatus", new ProcessEvent(this));
+        lastCangeStatusTimestamp = ct;
     }
 
     public int getPriority() {

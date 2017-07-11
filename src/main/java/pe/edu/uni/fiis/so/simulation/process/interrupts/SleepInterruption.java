@@ -17,4 +17,9 @@ public class SleepInterruption implements InterruptionInterface {
     public boolean isResolved(long timestamp) {
         return timestamp > startTime + durationTime;
     }
+
+    @Override
+    public int result() {
+        return InterruptionConstantes.SUCCESS;
+    }
 }

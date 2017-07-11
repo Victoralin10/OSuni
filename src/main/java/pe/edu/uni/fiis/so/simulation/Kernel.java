@@ -6,13 +6,15 @@ import pe.edu.uni.fiis.so.simulation.memory.MemoryManagerInterface;
 import pe.edu.uni.fiis.so.simulation.policies.PolicyManager;
 import pe.edu.uni.fiis.so.simulation.process.*;
 import pe.edu.uni.fiis.so.simulation.process.Process;
+import pe.edu.uni.fiis.so.simulation.services.MemoryServiceRequest;
+import pe.edu.uni.fiis.so.simulation.services.StartupServiceRequest;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -23,6 +25,8 @@ public class Kernel {
     public static final int STATE_INSTANCED = 1;
     public static final int STATE_LOADING = 2;
     public static final int STATE_READY = 4;
+
+    public static Kernel instance;
 
     private final Machine machine;
     private ProcessManager processManager;
@@ -36,10 +40,12 @@ public class Kernel {
     // Locks
     private Lock kernelLock;
     private Lock processManagerLock;
+    private Lock memoryLock;
     // end - Locks
 
     // Service queues
-
+    private Queue<StartupServiceRequest> startupServiceQueue;
+    private Queue<MemoryServiceRequest> memoryServiceQueue;
     // End Service queues
 
     public Kernel(Machine machine) {
@@ -48,27 +54,15 @@ public class Kernel {
         this.state = STATE_INSTANCED;
         processManagerLock = new ReentrantLock();
         kernelLock = new ReentrantLock();
+        memoryLock = new ReentrantLock();
+        instance = this;
+
+        startupServiceQueue = new ConcurrentLinkedQueue<>();
+        memoryServiceQueue = new ConcurrentLinkedQueue<>();
     }
 
     public void setState(int state) {
         this.state = state;
-    }
-
-    private String getTextFromFile(String name) {
-        URL resource = getClass().getClassLoader().getResource("bin/" + name);
-        if (resource == null) {
-            return null;
-        }
-        StringBuilder ans = new StringBuilder();
-        try {
-            Scanner in = new Scanner(resource.openStream());
-            while (in.hasNextLine()) {
-                ans.append(in.nextLine()).append('\n');
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return ans.toString();
     }
 
     ArrayList<String> getLinesFromFile(String name) {
@@ -162,10 +156,14 @@ public class Kernel {
                 processManagerLock.lock();
                 if (p.isFinished()) {
                     processManager.removeProcess(pcb);
+                    memoryLock.lock();
                     memoryManager.free(pcb.getPid());
+                    memoryLock.unlock();
                 } else if (p.isErrored()) {
                     processManager.removeProcess(pcb);
+                    memoryLock.lock();
                     memoryManager.free(pcb.getPid());
+                    memoryLock.unlock();
                 } else if (!p.isInterrupted()) {
                     pc.advance();
                     processManager.toReady(pcb);
@@ -207,5 +205,17 @@ public class Kernel {
 
     MemoryManagerInterface getMemoryManager() {
         return memoryManager;
+    }
+
+    public Queue<StartupServiceRequest> getStartupServiceQueue() {
+        return startupServiceQueue;
+    }
+
+    public Queue<MemoryServiceRequest> getMemoryServiceQueue() {
+        return memoryServiceQueue;
+    }
+
+    public Lock getMemoryLock() {
+        return memoryLock;
     }
 }

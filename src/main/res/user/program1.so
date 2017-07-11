@@ -1,0 +1,10 @@
+# name: program1
+# size: 200Mb
+print "Hola Mundo"
+sleep 1s
+print "Program1 paso1"
+sleep 1s
+print "Program1 paso2"
+sleep 1s
+print "Program1 end"
+end

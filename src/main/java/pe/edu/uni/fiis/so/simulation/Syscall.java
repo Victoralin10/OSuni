@@ -2,10 +2,15 @@ package pe.edu.uni.fiis.so.simulation;
 
 import pe.edu.uni.fiis.so.simulation.process.*;
 import pe.edu.uni.fiis.so.simulation.process.Process;
+import pe.edu.uni.fiis.so.simulation.process.interrupts.InterruptionConstantes;
 import pe.edu.uni.fiis.so.simulation.process.interrupts.SleepInterruption;
+import pe.edu.uni.fiis.so.simulation.services.MemoryServiceRequest;
+import pe.edu.uni.fiis.so.simulation.services.StartupServiceRequest;
 import pe.edu.uni.fiis.so.util.TimeParser;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
 
 /**
  * Created by vcueva on 6/28/17.
@@ -56,7 +61,6 @@ public class Syscall {
 
         ArrayList<String> lines = kernel.getLinesFromFile("bin/" + args.get(0));
         if (lines == null) {
-            System.out.println("null");
             return 10;
         }
 
@@ -70,6 +74,7 @@ public class Syscall {
         Process process = new Process();
         process.setCode(code);
         myPcb.setProcess(process);
+        myPcb.setPriority(-20);
 
         _sleep(process.getSize()/(50<<20));
         kernel.getMemoryManager().malloc(process.getSize(), myPcb.getPid());
@@ -96,14 +101,81 @@ public class Syscall {
         return 10;
     }
 
+    public int runExe(Cpu cpu, PCB pcb, ArrayList<String> args, Integer maxTime) {
+        System.out.println("");
+        return 10;
+    }
+
     public int startUpService(Cpu cpu, PCB pcb, ArrayList<String> args, Integer maxTime) {
-        System.out.println("StartupService here");
+        Queue<StartupServiceRequest> ssq = kernel.getStartupServiceQueue();
+        if (ssq.isEmpty()) {
+            return 5;
+        }
+
+        StartupServiceRequest poll = ssq.poll();
+
+        ArrayList<String> lines = kernel.getLinesFromFile("user/" + poll.getProgram());
+        if (lines == null) {
+            poll.getInterruption().setInterruptionResult(InterruptionConstantes.ERROR);
+            poll.getInterruption().markAsResolved();
+            return 10;
+        }
+
+        PCB myPcb = new PCB();
+        kernel.getProcessManagerLock().lock();
+        kernel.getProcessManager().addProcess(myPcb);
+        kernel.getProcessManagerLock().unlock();
+
+        try {
+            Code code = new Code();
+            code.load(lines);
+            Process process = new Process();
+            process.setCode(code);
+            myPcb.setProcess(process);
+
+            _sleep(process.getSize()/(50<<20));
+            kernel.getMemoryLock().lock();
+            kernel.getMemoryManager().malloc(process.getSize(), myPcb.getPid());
+            kernel.getMemoryLock().unlock();
+
+            kernel.getProcessManagerLock().lock();
+            kernel.getProcessManager().toReady(myPcb);
+            kernel.getProcessManagerLock().unlock();
+
+            poll.getInterruption().setInterruptionResult(InterruptionConstantes.SUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            kernel.getProcessManagerLock().lock();
+            kernel.getProcessManager().removeProcess(myPcb);
+            kernel.getProcessManagerLock().unlock();
+            poll.getInterruption().setInterruptionResult(InterruptionConstantes.ERROR);
+        }
+
         return 10;
     }
 
     public int memoryService(Cpu cpu, PCB pcb, ArrayList<String> args, Integer maxTime) {
-        System.out.println("memory service here");
-        return 10;
+        Queue<MemoryServiceRequest> msq = kernel.getMemoryServiceQueue();
+        if (msq.isEmpty()) {
+            return 5;
+        }
+        MemoryServiceRequest poll = msq.poll();
+        List<Integer> pages;
+        kernel.getMemoryLock().lock();
+        pages = kernel.getMemoryManager().malloc(poll.getSize(), poll.getPcb().getPid());
+        kernel.getMemoryLock().unlock();
+
+        int aditional = 0;
+        if (pages == null) {
+            poll.getInterruption().setInterruptionResult(InterruptionConstantes.ERROR);
+            poll.getInterruption().markAsResolved();
+        } else {
+            poll.getInterruption().setInterruptionResult(InterruptionConstantes.SUCCESS);
+            poll.getInterruption().markAsResolved();
+            aditional += poll.getSize()/(8<<20);
+        }
+
+        return 10 + aditional;
     }
 
     public int diskService(Cpu cpu, PCB pcb, ArrayList<String> args, Integer maxTime) {

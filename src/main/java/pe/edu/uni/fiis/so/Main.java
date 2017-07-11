@@ -1,6 +1,8 @@
 package pe.edu.uni.fiis.so;
 
 import pe.edu.uni.fiis.so.simulation.Simulation;
+import pe.edu.uni.fiis.so.simulation.events.SimulationActionListener;
+import pe.edu.uni.fiis.so.simulation.events.SimulationEvent;
 import pe.edu.uni.fiis.so.util.GlobalConfig;
 
 
@@ -17,6 +19,13 @@ public class Main {
         GlobalConfig.load("config.ini");
         System.out.println("Hello World");
         Simulation.getInstance().start();
+
+        Simulation.getInstance().on(new SimulationActionListener("process.changeStatus") {
+            @Override
+            public void actionPerformed(SimulationEvent event) {
+                System.out.println(event.getInteger("pid") + ":" + event.getInteger("newState"));
+            }
+        });
 
         try {
             Thread.sleep(10 * 1000);
