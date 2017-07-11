@@ -6,7 +6,9 @@ import pe.edu.uni.fiis.so.simulation.memory.MemoryManagerInterface;
 import pe.edu.uni.fiis.so.simulation.policies.PolicyManager;
 import pe.edu.uni.fiis.so.simulation.process.*;
 import pe.edu.uni.fiis.so.simulation.process.Process;
+import pe.edu.uni.fiis.so.simulation.services.DiscServiceRequest;
 import pe.edu.uni.fiis.so.simulation.services.MemoryServiceRequest;
+import pe.edu.uni.fiis.so.simulation.services.NetworkServiceRequest;
 import pe.edu.uni.fiis.so.simulation.services.StartupServiceRequest;
 
 import java.io.IOException;
@@ -46,6 +48,8 @@ public class Kernel {
     // Service queues
     private Queue<StartupServiceRequest> startupServiceQueue;
     private Queue<MemoryServiceRequest> memoryServiceQueue;
+    private Queue<DiscServiceRequest> discServiceQueue;
+    private Queue<NetworkServiceRequest> networkServiceQueue;
     // End Service queues
 
     public Kernel(Machine machine) {
@@ -59,6 +63,8 @@ public class Kernel {
 
         startupServiceQueue = new ConcurrentLinkedQueue<>();
         memoryServiceQueue = new ConcurrentLinkedQueue<>();
+        discServiceQueue = new ConcurrentLinkedQueue<>();
+        networkServiceQueue = new ConcurrentLinkedQueue<>();
     }
 
     public void setState(int state) {
@@ -217,5 +223,13 @@ public class Kernel {
 
     public Lock getMemoryLock() {
         return memoryLock;
+    }
+
+    public Queue<DiscServiceRequest> getDiscServiceQueue() {
+        return discServiceQueue;
+    }
+
+    public Queue<NetworkServiceRequest> getNetworkServiceQueue() {
+        return networkServiceQueue;
     }
 }

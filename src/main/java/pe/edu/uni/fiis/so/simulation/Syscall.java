@@ -3,13 +3,18 @@ package pe.edu.uni.fiis.so.simulation;
 import pe.edu.uni.fiis.so.simulation.process.*;
 import pe.edu.uni.fiis.so.simulation.process.Process;
 import pe.edu.uni.fiis.so.simulation.process.interrupts.InterruptionConstantes;
+import pe.edu.uni.fiis.so.simulation.process.interrupts.NetworkInterruption;
 import pe.edu.uni.fiis.so.simulation.process.interrupts.SleepInterruption;
+import pe.edu.uni.fiis.so.simulation.services.DiscServiceRequest;
 import pe.edu.uni.fiis.so.simulation.services.MemoryServiceRequest;
+import pe.edu.uni.fiis.so.simulation.services.NetworkServiceRequest;
 import pe.edu.uni.fiis.so.simulation.services.StartupServiceRequest;
+import pe.edu.uni.fiis.so.util.GlobalConfig;
 import pe.edu.uni.fiis.so.util.TimeParser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
 /**
@@ -179,12 +184,89 @@ public class Syscall {
     }
 
     public int diskService(Cpu cpu, PCB pcb, ArrayList<String> args, Integer maxTime) {
-        System.out.println("diskService here");
+        Queue<DiscServiceRequest> dsq = kernel.getDiscServiceQueue();
+        if (dsq.isEmpty()) {
+            return 5;
+        }
+
+        Map<String, Object> memory = pcb.getProcess().getMemory();
+        if (!memory.containsKey("state")) {
+            memory.put("state", 0);
+        }
+        if (!memory.containsKey("avance")) {
+            memory.put("avance", 0);
+        }
+
+        DiscServiceRequest peek = dsq.peek();
+        if (memory.get("state").equals(0)) {
+            memory.put("avance", 0);
+            memory.put("state", 1);
+        }
+        long ava  = (long) memory.get("avance");
+        long left = peek.getSize() - ava;
+        long v;
+        if (peek.getType() == DiscServiceRequest.DISC_READ) {
+            v = GlobalConfig.getInt("disc.readSpeed", 50000000)/1000;
+        } else {
+            v = GlobalConfig.getInt("disc.writeSpeed", 20000000)/1000;
+        }
+        long t = left/v;
+        if (t + 10 > maxTime) {
+            _sleep(maxTime - 10);
+            memory.put("avance", ava + v);
+        } else {
+            _sleep(t);
+            memory.put("state", 0);
+            memory.put("avance", 0);
+            dsq.poll();
+            peek.getInterruption().setInterruptionResult(InterruptionConstantes.SUCCESS);
+            peek.getInterruption().markAsResolved();
+        }
+
         return 10;
     }
 
     public int networkService(Cpu cpu, PCB pcb, ArrayList<String> args, Integer maxTime) {
-        System.out.println("networkManager");
+        Queue<NetworkServiceRequest> nsq = kernel.getNetworkServiceQueue();
+        if (nsq.isEmpty()) {
+            return 5;
+        }
+
+        Map<String, Object> memory = pcb.getProcess().getMemory();
+        if (!memory.containsKey("state")) {
+            memory.put("state", 0);
+        }
+        if (!memory.containsKey("avance")) {
+            memory.put("avance", 0);
+        }
+
+        NetworkServiceRequest peek = nsq.peek();
+        if (memory.get("state").equals(0)) {
+            memory.put("avance", 0);
+            memory.put("state", 1);
+        }
+        long ava  = (long) memory.get("avance");
+        long left = peek.getSize() - ava;
+        long v;
+        if (peek.getType() == peek.NET_DOWNLOAD) {
+            v = GlobalConfig.getInt("net.downloadSpeed", 50000000)/1000;
+        } else {
+            v = GlobalConfig.getInt("disc.uploadSpeed", 20000000)/1000;
+        }
+        long t = left/v;
+
+        if (t > maxTime - 10) {
+            _sleep(maxTime - 10);
+            memory.put("avance", ava + v);
+        } else {
+            _sleep(t);
+            memory.put("state", 0);
+            memory.put("avance", 0);
+            peek.getInterruption().setInterruptionResult(InterruptionConstantes.SUCCESS);
+            peek.getInterruption().markAsResolved();
+            nsq.poll();
+        }
+
         return 10;
     }
 

@@ -2,6 +2,9 @@ package pe.edu.uni.fiis.so.simulation.process;
 
 import pe.edu.uni.fiis.so.simulation.process.interrupts.InterruptionInterface;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 /**
  * Created by vcueva on 6/28/17.
  */
@@ -17,10 +20,14 @@ public class Process {
     private String name;
     private long size;
 
+    private Map<String, Object> memory;
+
     public Process() {
         interrupted = false;
         errored = false;
         finished = false;
+
+        memory = new TreeMap<>();
     }
 
     public Code getCode() {
@@ -79,5 +86,9 @@ public class Process {
 
     public void setSize(long size) {
         this.size = size;
+    }
+
+    public Map<String, Object> getMemory() {
+        return memory;
     }
 }
