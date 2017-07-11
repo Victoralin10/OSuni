@@ -3,12 +3,13 @@ package pe.edu.uni.fiis.so.simulation;
 import pe.edu.uni.fiis.so.simulation.process.*;
 import pe.edu.uni.fiis.so.simulation.process.Process;
 import pe.edu.uni.fiis.so.simulation.process.interrupts.InterruptionConstantes;
-import pe.edu.uni.fiis.so.simulation.process.interrupts.NetworkInterruption;
+import pe.edu.uni.fiis.so.simulation.process.interrupts.RunExeInterruption;
 import pe.edu.uni.fiis.so.simulation.process.interrupts.SleepInterruption;
 import pe.edu.uni.fiis.so.simulation.services.DiscServiceRequest;
 import pe.edu.uni.fiis.so.simulation.services.MemoryServiceRequest;
 import pe.edu.uni.fiis.so.simulation.services.NetworkServiceRequest;
 import pe.edu.uni.fiis.so.simulation.services.StartupServiceRequest;
+import pe.edu.uni.fiis.so.util.ArgumentParser;
 import pe.edu.uni.fiis.so.util.GlobalConfig;
 import pe.edu.uni.fiis.so.util.TimeParser;
 
@@ -40,7 +41,7 @@ public class Syscall {
     }
 
     public int sleep(Cpu cpu, PCB pcb, ArrayList<String> args, Integer maxTime) {
-        System.out.println("sleep here");
+        // System.out.println("sleep here");
         if (pcb.getProcess().getInterruption() != null) {
             pcb.getProcess().setInterruption(null);
             return 1;
@@ -92,7 +93,7 @@ public class Syscall {
     }
 
     public int end(Cpu cpu, PCB pcb, ArrayList<String> args, Integer maxTime) {
-        System.out.println("end here");
+        // System.out.println("end here");
         pcb.getProcess().setFinished(true);
         return 10;
     }
@@ -107,7 +108,26 @@ public class Syscall {
     }
 
     public int runExe(Cpu cpu, PCB pcb, ArrayList<String> args, Integer maxTime) {
-        System.out.println("");
+        if (args.size() != 1) {
+            pcb.getProcess().setErrored(true);
+            return 5;
+        }
+
+        if (pcb.getProcess().getInterruption() != null) {
+            if (pcb.getProcess().getInterruption().result() == InterruptionConstantes.ERROR) {
+                pcb.getProcess().setErrored(true);
+            } else {
+                pcb.getProcess().setInterruption(null);
+            }
+        } else {
+            RunExeInterruption inte = new RunExeInterruption();
+            StartupServiceRequest ssr = new StartupServiceRequest(inte, args.get(0), pcb);
+            pcb.getProcess().setInterruption(inte);
+            pcb.getProcess().setInterrupted(true);
+            _sleep(5);
+            kernel.getStartupServiceQueue().add(ssr);
+        }
+
         return 10;
     }
 
@@ -265,6 +285,31 @@ public class Syscall {
             peek.getInterruption().setInterruptionResult(InterruptionConstantes.SUCCESS);
             peek.getInterruption().markAsResolved();
             nsq.poll();
+        }
+
+        return 10;
+    }
+
+    public int shellService(Cpu cpu, PCB pcb, ArrayList<String> args, Integer maxTime) {
+        Queue<String> scq = Simulation.getInstance().getShellCommandsQueue();
+
+        if (scq.isEmpty()) {
+            return 5;
+        }
+
+        List<String> parsed = ArgumentParser.parse(scq.poll());
+        if (parsed.size() == 0) {
+            return 10;
+        }
+
+        if (parsed.get(0).equals("run")) {
+            if (parsed.size() == 1) {
+                return 10;
+            } else {
+                RunExeInterruption inte = new RunExeInterruption();
+                kernel.getStartupServiceQueue().add(new StartupServiceRequest(inte, parsed.get(1), pcb));
+                return 10;
+            }
         }
 
         return 10;

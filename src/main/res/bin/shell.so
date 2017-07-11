@@ -1,0 +1,7 @@
+# name: System
+# size: 10Mb
+print "Starting Shell"
+loop:
+shellService
+sleep 10ms
+jump loop

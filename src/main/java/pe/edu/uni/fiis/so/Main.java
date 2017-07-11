@@ -1,8 +1,6 @@
 package pe.edu.uni.fiis.so;
 
 import pe.edu.uni.fiis.so.simulation.Simulation;
-import pe.edu.uni.fiis.so.simulation.events.SimulationActionListener;
-import pe.edu.uni.fiis.so.simulation.events.SimulationEvent;
 import pe.edu.uni.fiis.so.util.GlobalConfig;
 
 
@@ -20,15 +18,13 @@ public class Main {
         System.out.println("Hello World");
         Simulation.getInstance().start();
 
-        Simulation.getInstance().on(new SimulationActionListener("process.changeStatus") {
-            @Override
-            public void actionPerformed(SimulationEvent event) {
-                System.out.println(event.getInteger("pid") + ":" + event.getInteger("newState"));
-            }
-        });
-
+        Simulation.getInstance().getShellCommandsQueue().add("run program1.so");
+        Simulation.getInstance().getShellCommandsQueue().add("run program1.so");
+        Simulation.getInstance().getShellCommandsQueue().add("run program1.so");
+        Simulation.getInstance().getShellCommandsQueue().add("run program1.so");
+        Simulation.getInstance().getShellCommandsQueue().add("run program1.so");
         try {
-            Thread.sleep(10 * 1000);
+            Thread.sleep(60*1000);
             Simulation.getInstance().stop();
         } catch (InterruptedException e) {
             e.printStackTrace();

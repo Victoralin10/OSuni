@@ -1,8 +1,6 @@
 package pe.edu.uni.fiis.so.simulation.process;
 
 import pe.edu.uni.fiis.so.simulation.Kernel;
-import pe.edu.uni.fiis.so.simulation.Simulation;
-import pe.edu.uni.fiis.so.simulation.events.ProcessEvent;
 
 /**
  * Created by vcueva on 6/28/17.
@@ -113,7 +111,7 @@ public class PCB implements Comparable {
         }
 
         this.processStatus = processStatus;
-        Simulation.getInstance().dispatchEvent("process.changeStatus", new ProcessEvent(this));
+        //Simulation.getInstance().dispatchEvent("process.changeStatus", new ProcessEvent(this));
         lastCangeStatusTimestamp = ct;
     }
 

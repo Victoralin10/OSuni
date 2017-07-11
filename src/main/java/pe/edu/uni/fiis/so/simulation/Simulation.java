@@ -5,7 +5,9 @@ import pe.edu.uni.fiis.so.simulation.events.SimulationEvent;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Queue;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Created by vcueva on 6/21/17.
@@ -23,6 +25,8 @@ public class Simulation {
     private int status;
     private Machine machine;
 
+    private Queue<String> shellCommandsQueue;
+
     public Simulation() {
         listeners = new TreeMap<>();
 
@@ -31,6 +35,7 @@ public class Simulation {
         }
 
         status = SIMULATION_BEGIN_STATE;
+        shellCommandsQueue = new ConcurrentLinkedQueue<>();
     }
 
     public static Simulation getInstance() {
@@ -88,5 +93,9 @@ public class Simulation {
             t.setPriority(Thread.MAX_PRIORITY);
             t.start();
         }
+    }
+
+    public Queue<String> getShellCommandsQueue() {
+        return shellCommandsQueue;
     }
 }

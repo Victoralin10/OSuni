@@ -4,6 +4,7 @@ print "Starting Kernel"
 runSysExe memory.so
 runSysExe disk.so
 runSysExe network.so
+runSysExe shell.so
 loop:
 startUpService
 sleep 10ms
