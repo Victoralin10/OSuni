@@ -1,0 +1,8 @@
+# name: MemoryManager
+# size: 50MB
+print "Starting Memory Manger"
+loop:
+memoryService
+sleep 10ms
+jump loop
+end

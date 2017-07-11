@@ -38,14 +38,16 @@ public class Kernel {
     private Lock processManagerLock;
     // end - Locks
 
+    // Service queues
+
+    // End Service queues
+
     public Kernel(Machine machine) {
         this.machine = machine;
         this.powerOffSignal = false;
         this.state = STATE_INSTANCED;
         processManagerLock = new ReentrantLock();
         kernelLock = new ReentrantLock();
-
-        memoryManager = new FirstFitManager(machine.getMemory());
     }
 
     public void setState(int state) {
@@ -61,7 +63,7 @@ public class Kernel {
         try {
             Scanner in = new Scanner(resource.openStream());
             while (in.hasNextLine()) {
-                ans.append(in.nextLine() + '\n');
+                ans.append(in.nextLine()).append('\n');
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -69,8 +71,8 @@ public class Kernel {
         return ans.toString();
     }
 
-    private ArrayList<String> getLinesFromFile(String name) {
-        URL resource = getClass().getClassLoader().getResource("bin/" + name);
+    ArrayList<String> getLinesFromFile(String name) {
+        URL resource = getClass().getClassLoader().getResource(name);
         if (resource == null) {
             return null;
         }
@@ -87,9 +89,10 @@ public class Kernel {
     }
 
     private void runSystemd() {
-        ArrayList<String> xd = getLinesFromFile("systemd.so");
+        ArrayList<String> xd = getLinesFromFile("bin/systemd.so");
 
         PCB pcb = new PCB();
+        pcb.setPriority(-20);
         processManager.addProcess(pcb);
 
         Process process = new Process();
@@ -98,6 +101,7 @@ public class Kernel {
         Code mc = new Code();
         mc.load(xd);
         process.setCode(mc);
+        memoryManager.malloc(process.getSize(), pcb.getPid());
         processManager.toReady(pcb);
     }
 
@@ -105,6 +109,7 @@ public class Kernel {
         kernelLock.lock();
         if (state == STATE_INSTANCED) {
             setState(STATE_LOADING);
+            memoryManager = new FirstFitManager(machine.getMemory());
             processManager = new ProcessManager();
             policyManager = new PolicyManager(machine.getCpus());
             syscall = new Syscall(this);
@@ -118,14 +123,15 @@ public class Kernel {
             processManagerLock.lock();
             ArrayList<PCB> readys = new ArrayList<>();
             long ct = machine.getClock().getAbsoluteTime();
-            for (PCB pcb1: processManager.getBlockedQueue()) {
+            for (PCB pcb1 : processManager.getBlockedQueue()) {
                 if (pcb1.getProcess().getInterruption().isResolved(ct)) {
                     readys.add(pcb1);
                 }
             }
-            for (PCB pcb1: readys) {
+            for (PCB pcb1 : readys) {
                 processManager.toReady(pcb1);
                 pcb1.getProcess().setInterrupted(false);
+                // pcb1.getProgramCounter().advance();
             }
             if (processManager.getReadyQueue().size() > 0) {
                 pcb = policyManager.getPolicy(cpu).next(processManager.getReadyQueue());
@@ -142,7 +148,7 @@ public class Kernel {
                     sentence = p.getCode().getSentenceByAddress(pc.getCurrentAddress());
                 }
                 try {
-                    Class[] argTypes =  new Class[]{Cpu.class, PCB.class, sentence.getArguments().getClass(), Integer.class};
+                    Class[] argTypes = new Class[]{Cpu.class, PCB.class, sentence.getArguments().getClass(), Integer.class};
                     Method m = syscall.getClass().getDeclaredMethod(sentence.getFunction(), argTypes);
                     int t = (int) m.invoke(syscall, cpu, pcb, sentence.getArguments(), 200);
                     sleep(t);
@@ -156,8 +162,10 @@ public class Kernel {
                 processManagerLock.lock();
                 if (p.isFinished()) {
                     processManager.removeProcess(pcb);
+                    memoryManager.free(pcb.getPid());
                 } else if (p.isErrored()) {
                     processManager.removeProcess(pcb);
+                    memoryManager.free(pcb.getPid());
                 } else if (!p.isInterrupted()) {
                     pc.advance();
                     processManager.toReady(pcb);
@@ -187,5 +195,17 @@ public class Kernel {
 
     public Machine getMachine() {
         return machine;
+    }
+
+    ProcessManager getProcessManager() {
+        return processManager;
+    }
+
+    Lock getProcessManagerLock() {
+        return processManagerLock;
+    }
+
+    MemoryManagerInterface getMemoryManager() {
+        return memoryManager;
     }
 }

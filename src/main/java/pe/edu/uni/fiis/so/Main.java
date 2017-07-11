@@ -10,6 +10,7 @@ import pe.edu.uni.fiis.so.util.GlobalConfig;
 public class Main {
     /**
      * Here starts the system.
+     *
      * @param args System args
      */
     public static void main(String[] args) {

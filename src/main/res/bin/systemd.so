@@ -1,9 +1,11 @@
 # name: System
-# size: 10MB
+# size: 100MB
 print "Starting Kernel"
-runExe disk
-runExe network
+runSysExe memory.so
+runSysExe disk.so
+runSysExe network.so
 loop:
-sleep 1000ms
+startUpService
+sleep 10ms
 jump loop
 end

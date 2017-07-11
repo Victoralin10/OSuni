@@ -45,7 +45,6 @@ public class PCB implements Comparable {
      */
     private int priority;
 
-    
     private String name = "";
 
     /**

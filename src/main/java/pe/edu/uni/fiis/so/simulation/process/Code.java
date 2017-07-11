@@ -26,7 +26,7 @@ public class Code {
         this.state = STATE_LOADING;
         sentences = new ArrayList<>();
         this.name = "unnamed";
-        this.size = 50*1024*1024;
+        this.size = 50 * 1024 * 1024;
     }
 
     public void load(List<String> lines) {

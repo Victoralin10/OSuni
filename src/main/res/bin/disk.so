@@ -2,6 +2,6 @@
 # size: 10Mb 5kb 2b
 print "Starting Disk Manger"
 loop:
-
-sleep 10ms 1s
-goto loop
+diskService
+sleep 10ms
+jump loop

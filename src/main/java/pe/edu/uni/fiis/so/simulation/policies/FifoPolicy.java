@@ -26,7 +26,7 @@ public class FifoPolicy implements PolicyInterface {
         }
         if (priority) {
             PCB ans = null;
-            for (PCB pcb: readyQueue) {
+            for (PCB pcb : readyQueue) {
                 if (ans == null) {
                     ans = pcb;
                 } else if (ans.getPriority() > pcb.getPriority()) {

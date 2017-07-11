@@ -14,7 +14,7 @@ public interface MemoryManagerInterface {
      * @param pid  pid of the process.
      * @return A list of the pages reserved.
      */
-    List<Integer> malloc(int size, int pid);
+    List<Integer> malloc(long size, int pid);
 
     /**
      * Free the pages if not are read only.
@@ -33,4 +33,6 @@ public interface MemoryManagerInterface {
      * - false if it was not possible
      */
     boolean free(int pid, int page);
+
+    boolean free(int pid);
 }

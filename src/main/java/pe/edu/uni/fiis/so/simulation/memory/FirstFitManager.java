@@ -17,7 +17,7 @@ public class FirstFitManager implements MemoryManagerInterface {
     }
 
     @Override
-    public List<Integer> malloc(int size, int pid) {
+    public List<Integer> malloc(long size, int pid) {
         if (size > memory.getFreeMemorySize()) {
             return null;
         }
@@ -30,7 +30,7 @@ public class FirstFitManager implements MemoryManagerInterface {
                 size -= memory.getPageSize();
             }
         }
-        memory.setFreeMemorySize(memory.getFreeMemorySize() - memory.getPageSize()*ans.size());
+        memory.setFreeMemorySize(memory.getFreeMemorySize() - memory.getPageSize() * ans.size());
         return ans;
     }
 
@@ -38,11 +38,10 @@ public class FirstFitManager implements MemoryManagerInterface {
     public boolean free(int pid, List<Integer> pages) {
         int[] map = memory.getMap();
 
-        for (Integer page: pages) {
+        for (Integer page : pages) {
             map[page] = -1;
-            Lib.assertTrue(map[page] == pid);
         }
-        memory.setFreeMemorySize(memory.getFreeMemorySize() + memory.getPageSize()*pages.size());
+        memory.setFreeMemorySize(memory.getFreeMemorySize() + memory.getPageSize() * pages.size());
 
         return true;
     }
@@ -55,6 +54,18 @@ public class FirstFitManager implements MemoryManagerInterface {
         }
         map[page] = -1;
         memory.setFreeMemorySize(memory.getFreeMemorySize() + memory.getPageSize());
+        return true;
+    }
+
+    @Override
+    public boolean free(int pid) {
+        int[] map = memory.getMap();
+
+        for (int i = 0; i < memory.getTotalPages(); i++) {
+            if (pid == map[i]) {
+                map[i] = 0;
+            }
+        }
         return true;
     }
 }

@@ -14,6 +14,9 @@ public class Process {
     private boolean errored;
     private boolean finished;
 
+    private String name;
+    private long size;
+
     public Process() {
         interrupted = false;
         errored = false;
@@ -26,6 +29,8 @@ public class Process {
 
     public void setCode(Code code) {
         this.code = code;
+        this.name = code.getName();
+        this.size = code.getSize();
     }
 
     public boolean isInterrupted() {
@@ -58,5 +63,21 @@ public class Process {
 
     public void setFinished(boolean finished) {
         this.finished = finished;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
     }
 }

@@ -1,6 +1,7 @@
-# name: System
+# name: Network
 # size: 10MB
+print "Starting Network Manger"
 loop:
-
+networkService
 sleep 10ms
-goto loop
+jump loop
