@@ -116,6 +116,17 @@ public class Kernel {
         while (!powerOffSignal) {
             PCB pcb = null;
             processManagerLock.lock();
+            ArrayList<PCB> readys = new ArrayList<>();
+            long ct = machine.getClock().getAbsoluteTime();
+            for (PCB pcb1: processManager.getBlockedQueue()) {
+                if (pcb1.getProcess().getInterruption().isResolved(ct)) {
+                    readys.add(pcb1);
+                }
+            }
+            for (PCB pcb1: readys) {
+                processManager.toReady(pcb1);
+                pcb1.getProcess().setInterrupted(false);
+            }
             if (processManager.getReadyQueue().size() > 0) {
                 pcb = policyManager.getPolicy(cpu).next(processManager.getReadyQueue());
                 processManager.toRunning(pcb);
@@ -172,5 +183,9 @@ public class Kernel {
 
     public void powerOffSignal() {
         powerOffSignal = true;
+    }
+
+    public Machine getMachine() {
+        return machine;
     }
 }

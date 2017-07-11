@@ -5,5 +5,5 @@ package pe.edu.uni.fiis.so.simulation.process.interrupts;
  */
 
 public interface InterruptionInterface {
-    boolean isResolved();
+    boolean isResolved(long timestamp);
 }

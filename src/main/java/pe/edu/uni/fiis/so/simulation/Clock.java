@@ -17,7 +17,7 @@ public class Clock extends TimerTask {
     /**
      * Period of the timer for refresh.
      */
-    private static final int DEFAULT_TIMER_REFRESH_PERIOD = 25;
+    private static final int DEFAULT_TIMER_REFRESH_PERIOD = 100;
     /**
      * Static instance of this class.
      */
@@ -121,6 +121,7 @@ public class Clock extends TimerTask {
      * @return Time in milliseconds.
      */
     public long getAbsoluteTime() {
+
         return (long) absoluteTime;
     }
 }

@@ -4,6 +4,6 @@ print "Starting Kernel"
 runExe disk
 runExe network
 loop:
-sleep 10ms
+sleep 1000ms
 jump loop
 end

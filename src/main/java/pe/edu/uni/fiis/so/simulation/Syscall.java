@@ -4,6 +4,8 @@ import pe.edu.uni.fiis.so.simulation.process.Code;
 import pe.edu.uni.fiis.so.simulation.process.PCB;
 import pe.edu.uni.fiis.so.simulation.process.ProgramCounter;
 import pe.edu.uni.fiis.so.simulation.process.Sentence;
+import pe.edu.uni.fiis.so.simulation.process.interrupts.SleepInterruption;
+import pe.edu.uni.fiis.so.util.TimeParser;
 
 import java.util.ArrayList;
 
@@ -31,6 +33,14 @@ public class Syscall {
 
     public int sleep(Cpu cpu, PCB pcb, ArrayList<String> args, Integer maxTime) {
         System.out.println("sleep here");
+        if (args.size() == 0) {
+            pcb.getProcess().setErrored(true);
+            return 5;
+        }
+        long currentTime = kernel.getMachine().getClock().getAbsoluteTime();
+        SleepInterruption si = new SleepInterruption(currentTime, TimeParser.parse(args));
+        pcb.getProcess().setInterrupted(true);
+        pcb.getProcess().setInterruption(si);
         return 10;
     }
 

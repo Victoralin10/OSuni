@@ -65,8 +65,6 @@ public class ProcessManager {
     }
 
     public void toReady(PCB pcb) {
-        assert pcb.getProcessStatus() != PCB.READY;
-
         if (pcb.getProcessStatus() == PCB.WAITING) {
             blockedQueue.remove(pcb);
         }
@@ -91,8 +89,6 @@ public class ProcessManager {
     }
 
     public void toWaiting(PCB pcb) {
-        assert pcb.getProcessStatus() != PCB.WAITING;
-
         blockedQueue.add(pcb);
         pcb.setProcessStatus(PCB.WAITING);
     }
