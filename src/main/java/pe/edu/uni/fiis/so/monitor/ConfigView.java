@@ -45,17 +45,17 @@ public class ConfigView extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(203, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(235, 235, 235)
                 .addComponent(jButton1)
-                .addGap(197, 197, 197))
+                .addContainerGap(246, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(133, Short.MAX_VALUE)
+                .addContainerGap(381, Short.MAX_VALUE)
                 .addComponent(jButton1)
-                .addGap(87, 87, 87))
+                .addGap(36, 36, 36))
         );
 
         pack();

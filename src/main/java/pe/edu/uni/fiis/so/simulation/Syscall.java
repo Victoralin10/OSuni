@@ -326,6 +326,15 @@ public class Syscall {
                 kernel.getStartupServiceQueue().add(new StartupServiceRequest(inte, parsed.get(1), pcb));
                 return 10;
             }
+        } else if (parsed.get(0).equals("kill")) {
+            int pid = Integer.parseInt(parsed.get(1));
+            if (pid < 6) {
+                return 10;
+            }
+
+            kernel.getProcessManagerLock().lock();
+            kernel.getProcessManager().removeProcess(pid);
+            kernel.getProcessManagerLock().unlock();
         }
 
         return 10;

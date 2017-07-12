@@ -6,7 +6,7 @@ keyboard "Hola mundo1"
 sleep 1s
 keyboard "Hola mundo2"
 sleep 1s
-keyboard "Hola mundo3"
+keyboard "Hola mundo: miguel"
 sleep 1s
 print "End test teclado"
 end

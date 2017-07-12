@@ -19,11 +19,12 @@ public class PolicyManager {
         for (int i = 0; i < cpus.length; i++) {
             String policyName = GlobalConfig.getString("kernel.policy.cpu" + i, "fifo");
             PolicyInterface policy;
-            if (policyName.equals("fifo")) {
-                policy = new FifoPolicy();
+            if(policyName.equals("lifo")) {
+                policy = new LifoPolicy();
             } else {
                 policy = new FifoPolicy();
             }
+
             policies.put(cpus[i].getId(), policy);
         }
     }
