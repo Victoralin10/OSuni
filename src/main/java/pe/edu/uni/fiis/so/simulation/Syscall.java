@@ -546,7 +546,6 @@ public class Syscall {
         Map<String, Object> memory = pcb.getProcess().getMemory();
 
         int l = File.listRoots().length;
-        System.out.println(Arrays.toString(File.listRoots()));
         if (!memory.containsKey("old")) {
             memory.put("old", l);
         }

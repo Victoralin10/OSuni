@@ -95,7 +95,7 @@ public class Monitor extends javax.swing.JFrame {
                         break;
                     default: status = "instanciado";
                 }
-                String avg = event.getDouble("avgUsage") + "%";
+                String avg = Math.min(100.0, event.getDouble("avgUsage")) + "%";
                 cpuTable.setValueAt(status, id, 2);
                 cpuTable.setValueAt(avg, id, 3);                
             }
