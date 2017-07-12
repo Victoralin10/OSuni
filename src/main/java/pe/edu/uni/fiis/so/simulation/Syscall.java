@@ -2,15 +2,15 @@ package pe.edu.uni.fiis.so.simulation;
 
 import pe.edu.uni.fiis.so.simulation.process.*;
 import pe.edu.uni.fiis.so.simulation.process.Process;
-import pe.edu.uni.fiis.so.simulation.process.interrupts.InterruptionConstantes;
-import pe.edu.uni.fiis.so.simulation.process.interrupts.RunExeInterruption;
-import pe.edu.uni.fiis.so.simulation.process.interrupts.SleepInterruption;
+import pe.edu.uni.fiis.so.simulation.process.interrupts.*;
 import pe.edu.uni.fiis.so.simulation.services.DiscServiceRequest;
 import pe.edu.uni.fiis.so.simulation.services.MemoryServiceRequest;
 import pe.edu.uni.fiis.so.simulation.services.NetworkServiceRequest;
 import pe.edu.uni.fiis.so.simulation.services.StartupServiceRequest;
+import pe.edu.uni.fiis.so.statistic.StatisticParser;
 import pe.edu.uni.fiis.so.util.ArgumentParser;
 import pe.edu.uni.fiis.so.util.GlobalConfig;
+import pe.edu.uni.fiis.so.util.SizeParser;
 import pe.edu.uni.fiis.so.util.TimeParser;
 
 import java.util.ArrayList;
@@ -82,7 +82,8 @@ public class Syscall {
         process.setCode(code);
         myPcb.setProcess(process);
 
-        _sleep(process.getSize() / (50 << 20));
+        long velr = GlobalConfig.getLong("disc.readSpeed", 50<<20);
+        _sleep((1000*process.getSize()) / velr, cpu);
         kernel.getMemoryManager().malloc(process.getSize(), myPcb.getPid());
 
         kernel.getProcessManagerLock().lock();
@@ -124,7 +125,7 @@ public class Syscall {
             StartupServiceRequest ssr = new StartupServiceRequest(inte, args.get(0), pcb);
             pcb.getProcess().setInterruption(inte);
             pcb.getProcess().setInterrupted(true);
-            _sleep(5);
+            _sleep(5, cpu);
             kernel.getStartupServiceQueue().add(ssr);
         }
 
@@ -158,10 +159,16 @@ public class Syscall {
             process.setCode(code);
             myPcb.setProcess(process);
 
-            _sleep(process.getSize() / (50 << 20));
+            long velr = GlobalConfig.getLong("disc.readSpeed", 50<<20);
+            List<Integer> pageTable;
+            _sleep((1000*process.getSize()) / velr, cpu);
             kernel.getMemoryLock().lock();
-            kernel.getMemoryManager().malloc(process.getSize(), myPcb.getPid());
+            pageTable = kernel.getMemoryManager().malloc(process.getSize(), myPcb.getPid());
             kernel.getMemoryLock().unlock();
+
+            if (pageTable == null) {
+                throw new Exception("Does not possible to assign memory.");
+            }
 
             kernel.getProcessManagerLock().lock();
             kernel.getProcessManager().toReady(myPcb);
@@ -169,7 +176,7 @@ public class Syscall {
 
             poll.getInterruption().setInterruptionResult(InterruptionConstantes.SUCCESS);
         } catch (Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
             kernel.getProcessManagerLock().lock();
             kernel.getProcessManager().removeProcess(myPcb);
             kernel.getProcessManagerLock().unlock();
@@ -214,12 +221,12 @@ public class Syscall {
             memory.put("state", 0);
         }
         if (!memory.containsKey("avance")) {
-            memory.put("avance", 0);
+            memory.put("avance", 0L);
         }
 
         DiscServiceRequest peek = dsq.peek();
         if (memory.get("state").equals(0)) {
-            memory.put("avance", 0);
+            memory.put("avance", 0L);
             memory.put("state", 1);
         }
         long ava = (long) memory.get("avance");
@@ -232,12 +239,11 @@ public class Syscall {
         }
         long t = left / v;
         if (t + 10 > maxTime) {
-            _sleep(maxTime - 10);
-            memory.put("avance", ava + v);
+            _sleep(maxTime - 10, cpu);
+            memory.put("avance", ava + v*(maxTime - 10));
         } else {
-            _sleep(t);
+            _sleep(t, cpu);
             memory.put("state", 0);
-            memory.put("avance", 0);
             dsq.poll();
             peek.getInterruption().setInterruptionResult(InterruptionConstantes.SUCCESS);
             peek.getInterruption().markAsResolved();
@@ -276,10 +282,10 @@ public class Syscall {
         long t = left / v;
 
         if (t > maxTime - 10) {
-            _sleep(maxTime - 10);
-            memory.put("avance", ava + v);
+            _sleep(maxTime - 10, cpu);
+            memory.put("avance", ava + v*(maxTime - 10));
         } else {
-            _sleep(t);
+            _sleep(t, cpu);
             memory.put("state", 0);
             memory.put("avance", 0);
             peek.getInterruption().setInterruptionResult(InterruptionConstantes.SUCCESS);
@@ -315,9 +321,75 @@ public class Syscall {
         return 10;
     }
 
-    private void _sleep(long t) {
+    public int rsleep(Cpu cpu, PCB pcb, ArrayList<String> args, Integer maxTime) {
+        // System.out.println("sleep here");
+        if (pcb.getProcess().getInterruption() != null) {
+            pcb.getProcess().setInterruption(null);
+            return 1;
+        }
+
+        if (args.size() == 0) {
+            pcb.getProcess().setErrored(true);
+            return 5;
+        }
+
+        long currentTime = kernel.getMachine().getClock().getAbsoluteTime();
+        long duration =  StatisticParser.parse(args.get(0)).nextLongRandom();
+
+        SleepInterruption si = new SleepInterruption(currentTime, duration);
+        pcb.getProcess().setInterrupted(true);
+        pcb.getProcess().setInterruption(si);
+        return 10;
+    }
+
+    public int discRead(Cpu cpu, PCB pcb, ArrayList<String> args, Integer maxTime) {
+        if (args.size() == 0) {
+            pcb.getProcess().setErrored(true);
+            return 2;
+        }
+        InterruptionInterface inte = pcb.getProcess().getInterruption();
+        if (inte != null) {
+            pcb.getProcess().setInterruption(null);
+            return 3;
+        } else {
+            DiscInterruption dinte = new DiscInterruption();
+            DiscServiceRequest req = new DiscServiceRequest(SizeParser.parse(args), DiscServiceRequest.DISC_READ, dinte, pcb);
+            pcb.getProcess().setInterruption(dinte);
+            pcb.getProcess().setInterrupted(true);
+            kernel.getDiscServiceQueue().add(req);
+        }
+
+        return 5;
+    }
+
+    public int discWrite(Cpu cpu, PCB pcb, ArrayList<String> args, Integer maxTime) {
+        if (args.size() == 0) {
+            pcb.getProcess().setErrored(true);
+            return 2;
+        }
+        InterruptionInterface inte = pcb.getProcess().getInterruption();
+        if (inte != null) {
+            pcb.getProcess().setInterruption(null);
+            return 3;
+        } else {
+            DiscInterruption dinte = new DiscInterruption();
+            DiscServiceRequest req = new DiscServiceRequest(SizeParser.parse(args), DiscServiceRequest.DISC_WRITE, dinte, pcb);
+            pcb.getProcess().setInterruption(dinte);
+            pcb.getProcess().setInterrupted(true);
+            kernel.getDiscServiceQueue().add(req);
+        }
+
+        return 5;
+    }
+
+    private void _sleep(long t, Cpu cpu) {
         try {
-            Thread.sleep(t * kernel.getMachine().getClock().getFactor());
+            t *= kernel.getMachine().getClock().getFactor();
+            while (t > 0) {
+                Thread.sleep(Math.min(t, 100));
+                cpu.updateStatistic();
+                t -= 100;
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

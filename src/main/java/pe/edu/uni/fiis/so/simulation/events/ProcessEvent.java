@@ -13,10 +13,10 @@ public class ProcessEvent extends SimulationEvent {
         putValue("cpu", pcb.getCpuNumber());
         if (pcb.getProcess() != null) {
             putValue("name", pcb.getProcess().getName());
+            putValue("errored", pcb.getProcess().isErrored());
         } else {
             putValue("name", "untitled");
         }
-
         putValue("avgRunning", pcb.getAvgRunningTime());
         putValue("minRunning", pcb.getMinRunningTime());
         putValue("maxRunning", pcb.getMaxRunningTime());

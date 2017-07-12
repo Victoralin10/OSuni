@@ -1,0 +1,10 @@
+# name: testDisc
+# size: 10MB
+print "Hola Mundo"
+discRead 100MB
+print "Archivo leido"
+rsleep uniform(100,500)
+discWrite 100MB
+print "Reporte guardado"
+sleep 20ms
+end

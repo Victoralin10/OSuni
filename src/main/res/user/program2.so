@@ -1,10 +1,10 @@
 # name: program2
 # size: 100Mb
 print "Hola Mundo"
-sleep 1s
+rsleep uniform(500,2000)
 print "Program1 paso1"
-sleep 1s
+rsleep uniform(500,2000)
 print "Program1 paso2"
-sleep 1s
+rsleep uniform(500,2000)
 print "Program1 end"
 end

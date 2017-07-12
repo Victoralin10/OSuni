@@ -181,7 +181,8 @@ public class Monitor extends javax.swing.JFrame {
                         processTable.setValueAt("waiting", pid - 1, 3);
                         break;
                     case PCB.FINISHED:
-                        processTable.setValueAt("finished", pid - 1, 3);
+                        String er = event.getBolean("errored")?"|error":"";
+                        processTable.setValueAt("finished" + er, pid - 1, 3);
                         processTable.setValueAt(TimeParser.format(event.getLong("timestamp")), pid - 1, 9);
                         break;
                 }
