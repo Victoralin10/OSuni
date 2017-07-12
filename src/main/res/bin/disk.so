@@ -1,5 +1,5 @@
 # name: DiscManager
-# size: 10Mb 5kb 2b
+# size: 200Mb
 print "Starting Disk Manger"
 loop:
 diskService

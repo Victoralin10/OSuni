@@ -1,5 +1,5 @@
 # name: MemoryManager
-# size: 50MB
+# size: 200MB
 print "Starting Memory Manger"
 loop:
 memoryService
