@@ -23,20 +23,21 @@ public class WorstFitManager implements MemoryManagerInterface {
         }
 
         int[] map = memory.getMap();
-        int b = -1, s = 0, c = 0;
+        int b = -1, s = 0, c = 0, lb = -1;
         for (int i = 0; i < memory.getTotalPages(); i++) {
             if (map[i] == -1) {
                 c++;
             } else {
                 if (c > s) {
-                    b = i - c;
+                    b = lb + 1;
                     s = c;
                 }
                 c = 0;
+                lb = i;
             }
         }
         if (c > s) {
-            b = memory.getTotalPages() - c;
+            b = lb + 1;
         }
 
         if (b < 0) {
@@ -47,6 +48,7 @@ public class WorstFitManager implements MemoryManagerInterface {
         for (int i = b; size > 0; i++) {
             map[i] = pid;
             ans.add(i);
+            size -= memory.getPageSize();
         }
 
         memory.setFreeMemorySize(memory.getFreeMemorySize() - memory.getPageSize() * ans.size());

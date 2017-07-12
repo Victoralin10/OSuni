@@ -1,4 +1,4 @@
-# name: Usb Detector
+# name: "Usb Detector"
 # size: 10MB
 print "Starting usb detector"
 loop:

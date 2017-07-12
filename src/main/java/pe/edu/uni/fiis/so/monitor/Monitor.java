@@ -206,16 +206,21 @@ public class Monitor extends javax.swing.JFrame {
         });
     }
     
+    private int nroLineas = 0;
+    
     private void initLog() {
         DefaultCaret caret = (DefaultCaret) jTextArea1.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         Simulation.getInstance().on(new SimulationActionListener("log.update") {
             @Override
             public void actionPerformed(SimulationEvent event) {
+                if (nroLineas > 10000) {
+                    jTextArea1.setText("");
+                }
                 String line = event.getString("line");
                 long t = event.getLong("timestamp");
                 jTextArea1.append(TimeParser.format(t) + "> " + line + "\n");
-                //jTextArea1.
+                nroLineas++;
             }
         });
     }
