@@ -5,7 +5,6 @@
  */
 package pe.edu.uni.fiis.so.monitor;
 
-import java.util.Iterator;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import pe.edu.uni.fiis.so.simulation.Simulation;
@@ -32,9 +31,20 @@ public class Monitor extends javax.swing.JFrame {
      */
     public Monitor() {
         initComponents();
+        initSimulation();
         initCpu();
         initMemory();
         initProcess();
+    }
+    
+    private void initSimulation() {
+        Simulation.getInstance().on(new SimulationActionListener("clock.update") {
+            @Override
+            public void actionPerformed(SimulationEvent event) {
+                long time = event.getLong("time");
+                jTextField7.setText(TimeParser.format(time));
+            }
+        });
     }
 
     private void initCpu() {
@@ -139,20 +149,21 @@ public class Monitor extends javax.swing.JFrame {
             @Override
             public void actionPerformed(SimulationEvent event) {
                 DefaultTableModel dtm = (DefaultTableModel) processTable.getModel();
-                Object[] row = new Object[9];
+                Object[] row = new Object[10];
                 row[0] = event.getInteger("pid");
-                row[1] = event.getInteger("priority");
-                row[2] = "nuevo";
-                row[3] = "-1";
-                row[4] = TimeParser.format(0);
-                row[5] = TimeParser.format(0);
-                row[6] = TimeParser.format(0);
-                row[7] = TimeParser.format(event.getLong("time"));
-                row[8] = "";
+                row[1] = "";
+                row[2] = event.getInteger("priority");
+                row[3] = "new";
+                row[4] = "-1";
+                row[5] = "0";
+                row[6] = "0";
+                row[7] = "0";
+                row[8] = TimeParser.format(event.getLong("timestamp"));
+                row[9] = "";
                 dtm.addRow(row);
             }
         });
-        
+
         Simulation.getInstance().on(new SimulationActionListener("process.changeStatus") {
             @Override
             public void actionPerformed(SimulationEvent event) {
@@ -161,22 +172,30 @@ public class Monitor extends javax.swing.JFrame {
                 if (pid >  processTable.getRowCount()) return;
                 switch (nState) {
                     case PCB.READY:
-                        processTable.setValueAt("listo", pid - 1, 2);
+                        processTable.setValueAt("ready", pid - 1, 3);
                         break;
                     case PCB.RUNNING:
-                        processTable.setValueAt("ejecutando", pid - 1, 2);
+                        processTable.setValueAt("running", pid - 1, 3);
                         break;
                     case PCB.WAITING:
-                        processTable.setValueAt("esperando", pid - 1, 2);
+                        processTable.setValueAt("waiting", pid - 1, 3);
                         break;
                     case PCB.FINISHED:
-                        processTable.setValueAt("terminado", pid - 1, 2);
-                        processTable.setValueAt(TimeParser.toString(event.getLong("time")), pid - 1, 8);
+                        processTable.setValueAt("finished", pid - 1, 3);
+                        processTable.setValueAt(TimeParser.format(event.getLong("timestamp")), pid - 1, 9);
                         break;
                 }
                 int cpuN = event.getInteger("cpu");
-                processTable.setValueAt(cpuN>=0?"cpu"+cpuN:"-1", pid - 1, 3);
-                processTable.setValueAt(event.getInteger("priority"), pid - 1, 1);
+                processTable.setValueAt(cpuN>=0?"cpu"+cpuN:"-1", pid - 1, 4);
+                processTable.setValueAt(event.getString("name"), pid - 1, 1);
+
+                String rt = String.format("%d|%.2f|%d", event.getLong("minReady"), event.getDouble("avgReady"), event.getLong("maxReady"));
+                String et = String.format("%d|%.2f|%d", event.getLong("minRunning"), event.getDouble("avgRunning"), event.getLong("maxRunning"));
+                String bt = String.format("%d|%.2f|%d", event.getLong("minWaiting"), event.getDouble("avgWaiting"), event.getLong("maxWaiting"));
+                
+                processTable.setValueAt(rt, pid - 1, 5);
+                processTable.setValueAt(et, pid - 1, 6);
+                processTable.setValueAt(bt, pid - 1, 7);
             }
         });
     }
@@ -192,6 +211,9 @@ public class Monitor extends javax.swing.JFrame {
 
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel6 = new javax.swing.JPanel();
+        jPanel9 = new javax.swing.JPanel();
+        jLabel7 = new javax.swing.JLabel();
+        jTextField7 = new javax.swing.JTextField();
         jPanel1 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -225,15 +247,48 @@ public class Monitor extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jLabel7.setFont(new java.awt.Font("Dialog", 1, 48)); // NOI18N
+        jLabel7.setText("Time:");
+
+        jTextField7.setEditable(false);
+        jTextField7.setFont(new java.awt.Font("Dialog", 0, 48)); // NOI18N
+
+        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
+        jPanel9.setLayout(jPanel9Layout);
+        jPanel9Layout.setHorizontalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel7)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(177, Short.MAX_VALUE))
+        );
+        jPanel9Layout.setVerticalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(28, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 882, Short.MAX_VALUE)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 514, Short.MAX_VALUE)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(401, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Simulacion", jPanel6);
@@ -289,18 +344,33 @@ public class Monitor extends javax.swing.JFrame {
 
             },
             new String [] {
-                "pid", "prioridad", "estado", "cpu", "t listo", "t ejecucion", "t esperando", "starttime", "endtime"
+                "pid", "nombre", "prioridad", "estado", "cpu", "t listo", "t ejecucion", "t esperando", "starttime", "endtime"
             }
         ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, true, true, true, true, true
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
         jScrollPane2.setViewportView(processTable);
+        if (processTable.getColumnModel().getColumnCount() > 0) {
+            processTable.getColumnModel().getColumn(0).setResizable(false);
+            processTable.getColumnModel().getColumn(0).setPreferredWidth(25);
+            processTable.getColumnModel().getColumn(2).setResizable(false);
+            processTable.getColumnModel().getColumn(2).setPreferredWidth(40);
+            processTable.getColumnModel().getColumn(4).setResizable(false);
+            processTable.getColumnModel().getColumn(4).setPreferredWidth(30);
+        }
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -537,7 +607,7 @@ public class Monitor extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 541, Short.MAX_VALUE)
+            .addComponent(jTabbedPane1)
         );
 
         pack();
@@ -561,6 +631,7 @@ public class Monitor extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
@@ -574,6 +645,7 @@ public class Monitor extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
@@ -584,6 +656,7 @@ public class Monitor extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
     private javax.swing.JTextField jTextField6;
+    private javax.swing.JTextField jTextField7;
     private javax.swing.JTable memoryTable;
     private javax.swing.JTable processTable;
     // End of variables declaration//GEN-END:variables

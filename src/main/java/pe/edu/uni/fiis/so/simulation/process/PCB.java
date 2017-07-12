@@ -52,16 +52,30 @@ public class PCB implements Comparable {
     private String name = "";
 
     /**
-     * The time of the process running.
-     */
-    private long runningTime;
-
-    /**
      * Program Counter.
      */
     private ProgramCounter programCounter;
 
-    private long lastCangeStatusTimestamp;
+    // STATISTICS
+    private long lastChangeStatusTimestamp;
+    private long totalRunningTime;
+    private long runningCount = 0;
+    private double avgRunningTime = 0;
+    private long minRunningTime = (1<<20);
+    private long maxRunningTime = 0;
+
+    private long totalWaitingTime = 0;
+    private long waitingCount = 0;
+    private double avgWaitingTime = 0;
+    private long minWaitingTime = (1<<20);
+    private long maxWaitingTime = 0;
+
+    private long totalReadyTime = 0;
+    private long readyCount = 0;
+    private double avgReadyTime = 0;
+    private long minReadyTime = (1<<20);
+    private long maxReadyTime = 0;
+    // END STATISTICS
 
     public PCB(String name) {
         this();
@@ -73,11 +87,11 @@ public class PCB implements Comparable {
         this.processStatus = NEW;
         this.priority = 0;  //
         this.pid = nextPid;
-        this.runningTime = 0;
+        this.totalRunningTime = 0;
         nextPid++;
 
         this.programCounter = new ProgramCounter();
-        lastCangeStatusTimestamp = Kernel.instance.getMachine().getClock().getAbsoluteTime();
+        lastChangeStatusTimestamp = Kernel.instance.getMachine().getClock().getAbsoluteTime();
     }
 
     public int getPid() {
@@ -108,13 +122,30 @@ public class PCB implements Comparable {
             return;
         }
         long ct = Kernel.instance.getMachine().getClock().getAbsoluteTime();
+        long delta = ct - lastChangeStatusTimestamp;
         if (this.processStatus == RUNNING) {
-            runningTime += ct - lastCangeStatusTimestamp;
+            totalRunningTime += delta;
+            runningCount++;
+            avgRunningTime = totalRunningTime/((double)runningCount);
+            minRunningTime = Math.min(minRunningTime, delta);
+            maxRunningTime = Math.max(maxRunningTime, delta);
+        } else if (this.processStatus == WAITING) {
+            totalWaitingTime += delta;
+            waitingCount++;
+            avgWaitingTime = totalWaitingTime/((double)waitingCount);
+            minWaitingTime = Math.min(minWaitingTime, delta);
+            maxWaitingTime = Math.max(maxWaitingTime, delta);
+        } else if (this.processStatus == READY) {
+            totalReadyTime += delta;
+            readyCount++;
+            avgReadyTime = totalReadyTime/((double) readyCount);
+            minReadyTime = Math.min(minReadyTime, delta);
+            maxReadyTime = Math.max(maxReadyTime, delta);
         }
 
         this.processStatus = processStatus;
         Simulation.getInstance().dispatchEvent("process.changeStatus", new ProcessEvent(this));
-        lastCangeStatusTimestamp = ct;
+        lastChangeStatusTimestamp = ct;
     }
 
     public int getPriority() {
@@ -126,15 +157,15 @@ public class PCB implements Comparable {
             System.err.println("Invalid priority on process with pid " + this.getPid());
             return;
         }
+        if (this.priority == priority) {
+            return;
+        }
+
         this.priority = priority;
     }
 
-    public long getRunningTime() {
-        return runningTime;
-    }
-
-    public void setRunningTime(long runningTime) {
-        this.runningTime = runningTime;
+    public long getTotalRunningTime() {
+        return totalRunningTime;
     }
 
     public Process getProcess() {
@@ -168,6 +199,50 @@ public class PCB implements Comparable {
 
         PCB p2 = (PCB) o;
         return getPid() == p2.getPid();
+    }
+
+    public double getAvgRunningTime() {
+        return avgRunningTime;
+    }
+
+    public long getTotalWaitingTime() {
+        return totalWaitingTime;
+    }
+
+    public double getAvgWaitingTime() {
+        return avgWaitingTime;
+    }
+
+    public long getTotalReadyTime() {
+        return totalReadyTime;
+    }
+
+    public double getAvgReadyTime() {
+        return avgReadyTime;
+    }
+
+    public long getMinRunningTime() {
+        return minRunningTime;
+    }
+
+    public long getMaxRunningTime() {
+        return maxRunningTime;
+    }
+
+    public long getMinWaitingTime() {
+        return minWaitingTime;
+    }
+
+    public long getMaxWaitingTime() {
+        return maxWaitingTime;
+    }
+
+    public long getMinReadyTime() {
+        return minReadyTime;
+    }
+
+    public long getMaxReadyTime() {
+        return maxReadyTime;
     }
 }
 

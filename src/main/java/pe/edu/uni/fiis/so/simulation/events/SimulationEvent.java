@@ -1,5 +1,7 @@
 package pe.edu.uni.fiis.so.simulation.events;
 
+import pe.edu.uni.fiis.so.simulation.Kernel;
+
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -13,6 +15,9 @@ public class SimulationEvent {
 
     public SimulationEvent() {
         values = new TreeMap<>();
+
+        long ct = Kernel.instance.getMachine().getClock().getAbsoluteTime();
+        putValue("timestamp", ct);
     }
 
     void putValue(String key, Object value) {

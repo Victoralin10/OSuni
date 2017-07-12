@@ -1,6 +1,5 @@
 package pe.edu.uni.fiis.so.simulation.events;
 
-import pe.edu.uni.fiis.so.simulation.Kernel;
 import pe.edu.uni.fiis.so.simulation.process.PCB;
 
 /**
@@ -12,7 +11,20 @@ public class ProcessEvent extends SimulationEvent {
         putValue("pid", pcb.getPid());
         putValue("newState", pcb.getProcessStatus());
         putValue("cpu", pcb.getCpuNumber());
-        putValue("time", Kernel.instance.getMachine().getClock().getAbsoluteTime());
-        putValue("priority", pcb.getPriority());
+        if (pcb.getProcess() != null) {
+            putValue("name", pcb.getProcess().getName());
+        } else {
+            putValue("name", "untitled");
+        }
+
+        putValue("avgRunning", pcb.getAvgRunningTime());
+        putValue("minRunning", pcb.getMinRunningTime());
+        putValue("maxRunning", pcb.getMaxRunningTime());
+        putValue("avgWaiting", pcb.getAvgWaitingTime());
+        putValue("minWaiting", pcb.getMinWaitingTime());
+        putValue("maxWaiting", pcb.getMaxWaitingTime());
+        putValue("avgReady", pcb.getAvgReadyTime());
+        putValue("minReady", pcb.getMinReadyTime());
+        putValue("maxReady", pcb.getMaxReadyTime());
     }
 }

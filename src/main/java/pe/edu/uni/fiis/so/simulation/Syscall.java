@@ -71,6 +71,7 @@ public class Syscall {
         }
 
         PCB myPcb = new PCB();
+        myPcb.setPriority(-20);
         kernel.getProcessManagerLock().lock();
         kernel.getProcessManager().addProcess(myPcb);
         kernel.getProcessManagerLock().unlock();
@@ -80,7 +81,6 @@ public class Syscall {
         Process process = new Process();
         process.setCode(code);
         myPcb.setProcess(process);
-        myPcb.setPriority(-20);
 
         _sleep(process.getSize() / (50 << 20));
         kernel.getMemoryManager().malloc(process.getSize(), myPcb.getPid());

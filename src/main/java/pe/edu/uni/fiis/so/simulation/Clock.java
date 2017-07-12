@@ -1,5 +1,6 @@
 package pe.edu.uni.fiis.so.simulation;
 
+import pe.edu.uni.fiis.so.simulation.events.ClockEvent;
 import pe.edu.uni.fiis.so.util.GlobalConfig;
 
 import java.util.Timer;
@@ -17,7 +18,7 @@ public class Clock extends TimerTask {
     /**
      * Period of the timer for refresh.
      */
-    private static final int DEFAULT_TIMER_REFRESH_PERIOD = 100;
+    private static final int DEFAULT_TIMER_REFRESH_PERIOD = 10;
     /**
      * Static instance of this class.
      */
@@ -90,6 +91,7 @@ public class Clock extends TimerTask {
     @Override
     public void run() {
         absoluteTime += (double) DEFAULT_TIMER_REFRESH_PERIOD / factor;
+        Simulation.getInstance().dispatchEvent("clock.update", new ClockEvent((long) absoluteTime));
     }
 
     /**

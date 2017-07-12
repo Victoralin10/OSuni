@@ -65,8 +65,8 @@ public class Cpu implements Runnable {
             this.avgTimeRunning = (runningTime - lastStatRunTime) / 10.0;
             Simulation.getInstance().dispatchEvent("cpu.updateStats", new CpuEvent(this));
             this.lastStatRunTime = runningTime;
+            this.lastStatUpdateTime = now;
         }
-        this.lastStatUpdateTime = now;
     }
 
     public void setKernel(Kernel kernel) {

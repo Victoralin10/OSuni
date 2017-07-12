@@ -1,4 +1,4 @@
-# name: Network
+# name: NetworkService
 # size: 10MB
 print "Starting Network Manger"
 loop:
