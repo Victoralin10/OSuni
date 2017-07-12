@@ -27,7 +27,8 @@ public class Simulation {
             "cpu.updateStats",
             "memory.update",
             "clock.update",
-            "log.update"
+            "log.update",
+            "io.update"
     };
 
     private int status;

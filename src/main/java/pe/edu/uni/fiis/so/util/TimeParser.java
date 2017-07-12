@@ -66,6 +66,6 @@ public class TimeParser {
         milliseconds /= 60;
         int m = (int) (milliseconds%60);
         int h = (int) (milliseconds/60);
-        return String.format("%02d:%02d:%02d:%d", h, m, s, ms);
+        return String.format("%02d:%02d:%02d:%03d", h, m, s, ms);
     }
 }

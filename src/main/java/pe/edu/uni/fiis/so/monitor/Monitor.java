@@ -36,7 +36,7 @@ public class Monitor extends javax.swing.JFrame {
         initCpu();
         initMemory();
         initProcess();
-
+        initIo();
         initLog();
         setLocationRelativeTo(null);
     }
@@ -206,6 +206,15 @@ public class Monitor extends javax.swing.JFrame {
         });
     }
     
+    private void initIo() {
+        Simulation.getInstance().on(new SimulationActionListener("io.update") {
+            @Override
+            public void actionPerformed(SimulationEvent event) {
+                jTextArea2.append(TimeParser.format(event.getLong("timestamp")) + "> " + event.getString("line") + "\n");
+            }
+        });
+    }
+    
     private int nroLineas = 0;
     
     private void initLog() {
@@ -265,6 +274,8 @@ public class Monitor extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         jTextField6 = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        jTextArea2 = new javax.swing.JTextArea();
         jPanel10 = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
@@ -592,15 +603,25 @@ public class Monitor extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Memoria", jPanel2);
 
+        jTextArea2.setColumns(20);
+        jTextArea2.setRows(5);
+        jScrollPane5.setViewportView(jTextArea2);
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 882, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 858, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 514, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 490, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab("I/O", jPanel3);
@@ -742,8 +763,10 @@ public class Monitor extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTextArea jTextArea2;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;

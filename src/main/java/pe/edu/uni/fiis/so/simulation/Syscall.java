@@ -1,5 +1,7 @@
 package pe.edu.uni.fiis.so.simulation;
 
+import pe.edu.uni.fiis.so.simulation.events.LogEvent;
+import pe.edu.uni.fiis.so.simulation.events.SimulationEvent;
 import pe.edu.uni.fiis.so.simulation.process.*;
 import pe.edu.uni.fiis.so.simulation.process.Process;
 import pe.edu.uni.fiis.so.simulation.process.interrupts.*;
@@ -112,6 +114,7 @@ public class Syscall {
             return 5;
         }
         System.out.println(args.get(0));
+        Simulation.getInstance().dispatchEvent("io.update", new LogEvent(pcb.getPid() + ": " + args.get(0)));
         return 10;
     }
 
@@ -239,6 +242,16 @@ public class Syscall {
         if (memory.get("state").equals(0)) {
             memory.put("avance", 0L);
             memory.put("state", 1);
+
+            String line = pcb.getPid() + ": " + peek.getPcb().getPid() + " " + peek.getPcb().getProcess().getName();
+            if (peek.getType() == DiscServiceRequest.DISC_READ) {
+                line += " empieza a leer ";
+            } else {
+                line += " empieza a escribir ";
+            }
+
+            line += SizeParser.toString(peek.getSize());
+            Simulation.getInstance().dispatchEvent("io.update", new LogEvent(line));
         }
         long ava = (long) memory.get("avance");
         long left = peek.getSize() - ava;
@@ -279,11 +292,25 @@ public class Syscall {
         if (memory.get("state").equals(0)) {
             memory.put("avance", 0L);
             memory.put("state", 1);
+
+            String line = pcb.getPid() + ": " + peek.getPcb().getPid() + " " + peek.getPcb().getProcess().getName();
+            if (peek.getType() == NetworkServiceRequest.NET_UPLOAD) {
+                line += " empieza a subi ";
+            } else {
+                line += " empieza a descargar ";
+            }
+            line += SizeParser.toString(peek.getSize());
+            if (peek.getType() == NetworkServiceRequest.NET_UPLOAD) {
+                line += " hacia " + peek.getDirection();
+            } else {
+                line += " desde " + peek.getDirection();
+            }
+            Simulation.getInstance().dispatchEvent("io.update", new LogEvent(line));
         }
         long ava = (long) memory.get("avance");
         long left = peek.getSize() - ava;
         long v;
-        if (peek.getType() == peek.NET_DOWNLOAD) {
+        if (peek.getType() == NetworkServiceRequest.NET_DOWNLOAD) {
             v = GlobalConfig.getInt("net.downloadSpeed", 50000000) / 1000;
         } else {
             v = GlobalConfig.getInt("disc.uploadSpeed", 20000000) / 1000;
