@@ -1,5 +1,8 @@
 package pe.edu.uni.fiis.so.simulation.memory;
 
+import pe.edu.uni.fiis.so.simulation.Simulation;
+import pe.edu.uni.fiis.so.simulation.events.MemoryEvent;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +32,7 @@ public class FirstFitManager implements MemoryManagerInterface {
             }
         }
         memory.setFreeMemorySize(memory.getFreeMemorySize() - memory.getPageSize() * ans.size());
+        Simulation.getInstance().dispatchEvent("memory.update", new MemoryEvent(MemoryEvent.ALLOC, pid, ans));
         return ans;
     }
 
@@ -40,7 +44,7 @@ public class FirstFitManager implements MemoryManagerInterface {
             map[page] = -1;
         }
         memory.setFreeMemorySize(memory.getFreeMemorySize() + memory.getPageSize() * pages.size());
-
+        Simulation.getInstance().dispatchEvent("memory.update", new MemoryEvent(MemoryEvent.FREE, pid, pages));
         return true;
     }
 
@@ -52,18 +56,23 @@ public class FirstFitManager implements MemoryManagerInterface {
         }
         map[page] = -1;
         memory.setFreeMemorySize(memory.getFreeMemorySize() + memory.getPageSize());
+        ArrayList<Integer> pgs = new ArrayList<>();
+        pgs.add(page);
+        Simulation.getInstance().dispatchEvent("memory.update", new MemoryEvent(MemoryEvent.FREE, pid, pgs));
         return true;
     }
 
     @Override
     public boolean free(int pid) {
         int[] map = memory.getMap();
-
+        ArrayList<Integer> pgs = new ArrayList<>();
         for (int i = 0; i < memory.getTotalPages(); i++) {
             if (pid == map[i]) {
                 map[i] = 0;
+                pgs.add(i);
             }
         }
+        Simulation.getInstance().dispatchEvent("memory.update", new MemoryEvent(MemoryEvent.FREE, pid, pgs));
         return true;
     }
 }

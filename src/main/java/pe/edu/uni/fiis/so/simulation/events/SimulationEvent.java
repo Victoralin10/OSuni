@@ -38,4 +38,8 @@ public class SimulationEvent {
     public Double getDouble(String key) {
         return (Double) values.get(key);
     }
+
+    public Object getObject(String key) {
+        return values.get(key);
+    }
 }

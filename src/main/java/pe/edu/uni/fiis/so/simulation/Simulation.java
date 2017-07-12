@@ -19,8 +19,11 @@ public class Simulation {
 
     private static Simulation instance;
     private Map<String, ArrayList<SimulationActionListener>> listeners;
-    private String[] eventsName = new String[]{
-            "process.changeStatus"
+    private String[] eventsName = new String[] {
+            "process.changeStatus",
+            "cpu.changeStatus",
+            "cpu.updateStats",
+            "memory.update"
     };
     private int status;
     private Machine machine;

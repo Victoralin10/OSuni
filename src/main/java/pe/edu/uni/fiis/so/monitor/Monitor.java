@@ -5,7 +5,15 @@
  */
 package pe.edu.uni.fiis.so.monitor;
 
+import java.util.Iterator;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
 import pe.edu.uni.fiis.so.simulation.Simulation;
+import pe.edu.uni.fiis.so.simulation.events.MemoryEvent;
+import pe.edu.uni.fiis.so.simulation.events.SimulationActionListener;
+import pe.edu.uni.fiis.so.simulation.events.SimulationEvent;
+import pe.edu.uni.fiis.so.util.GlobalConfig;
+import pe.edu.uni.fiis.so.util.SizeParser;
 
 /**
  *
@@ -18,6 +26,100 @@ public class Monitor extends javax.swing.JFrame {
      */
     public Monitor() {
         initComponents();
+        initCpu();
+        initMemory();
+    }
+
+    private void initCpu() {
+        int aInt = GlobalConfig.getInt("machine.cpus", 2);
+        DefaultTableModel dtm = (DefaultTableModel) cpuTable.getModel();
+        for (int i = 0; i < aInt; i++) {
+            Object[] row = new Object[4];
+            row[0] = i;
+            row[1] = GlobalConfig.getString("kernel.policy.cpu" + i, "fifo");
+            row[2] = "instanciado";
+            row[3] = "0%";
+            dtm.addRow(row);
+        }
+        Simulation.getInstance().on(new SimulationActionListener("cpu.changeStatus") {
+            @Override
+            public void actionPerformed(SimulationEvent event) {
+                int id = event.getInteger("id");
+                String status = null;
+                switch (event.getInteger("status")) {
+                    case 2: status = "running";
+                        break;
+                    case 4: status = "sleeping";
+                        break;
+                    case 8: status = "finished";
+                        break;
+                    default: status = "instanciado";
+                }
+                String avg = event.getDouble("avgUsage") + "%";
+                cpuTable.setValueAt(status, id, 2);
+                cpuTable.setValueAt(avg, id, 3);
+            }
+        });
+        Simulation.getInstance().on(new SimulationActionListener("cpu.updateStats") {
+            @Override
+            public void actionPerformed(SimulationEvent event) {
+                int id = event.getInteger("id");
+                String status = null;
+                switch (event.getInteger("status")) {
+                    case 2: status = "running";
+                        break;
+                    case 4: status = "sleeping";
+                        break;
+                    case 8: status = "finished";
+                        break;
+                    default: status = "instanciado";
+                }
+                String avg = event.getDouble("avgUsage") + "%";
+                cpuTable.setValueAt(status, id, 2);
+                cpuTable.setValueAt(avg, id, 3);                
+            }
+        });
+    }
+    
+    private void initMemory() {
+        long ms = GlobalConfig.getLong("memory.size", 8L<<30);
+        long mps = GlobalConfig.getLong("memory.pageSize", 4<<20);
+        int np = (int) (ms/mps);
+        jTextField3.setText(SizeParser.toString(ms));
+        jTextField2.setText(SizeParser.toString(mps));
+        jTextField1.setText(np + "");
+        jTextField6.setText(GlobalConfig.getString("memory.policy", "firstFit"));
+        jTextField4.setText(0 + "");
+        jTextField5.setText(SizeParser.toString(ms));
+
+        DefaultTableModel dtm = (DefaultTableModel) memoryTable.getModel();
+        for (int i = 0; i < np; i++) {
+            Object[] row = new Object[4];
+            row[0] = i;
+            row[1] = "free";
+            row[2] = -1;
+            row[3] = mps*i;
+            dtm.addRow(row);
+        }
+        
+        Simulation.getInstance().on(new SimulationActionListener("memory.update") {
+            @Override
+            public void actionPerformed(SimulationEvent event) {
+                List <Integer> pages = (List <Integer>) event.getObject("pages");
+                int pid = event.getInteger("pid");
+                if(event.getInteger("type") == MemoryEvent.ALLOC) {
+                    for (int page : pages) {
+                        memoryTable.setValueAt("usado", page, 1);
+                        memoryTable.setValueAt(pid, page, 2);
+                    }
+                } else {
+                    for (int page : pages) {
+                        memoryTable.setValueAt("free", page, 1);
+                        memoryTable.setValueAt(-1, page, 2);
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -34,14 +136,14 @@ public class Monitor extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        cpuTable = new javax.swing.JTable();
         jPanel5 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        processTable = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable3 = new javax.swing.JTable();
+        memoryTable = new javax.swing.JTable();
         jPanel8 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -79,7 +181,7 @@ public class Monitor extends javax.swing.JFrame {
 
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Cpus"));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        cpuTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -88,7 +190,7 @@ public class Monitor extends javax.swing.JFrame {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Double.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
                 false, false, false, false
@@ -102,7 +204,7 @@ public class Monitor extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(cpuTable);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -117,13 +219,13 @@ public class Monitor extends javax.swing.JFrame {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Procesos"));
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        processTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -139,7 +241,7 @@ public class Monitor extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane2.setViewportView(jTable2);
+        jScrollPane2.setViewportView(processTable);
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -153,7 +255,7 @@ public class Monitor extends javax.swing.JFrame {
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 194, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -173,14 +275,14 @@ public class Monitor extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
         jTabbedPane1.addTab("Procesos", jPanel1);
 
-        jTable3.setModel(new javax.swing.table.DefaultTableModel(
+        memoryTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -203,7 +305,7 @@ public class Monitor extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane3.setViewportView(jTable3);
+        jScrollPane3.setViewportView(memoryTable);
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
@@ -393,6 +495,7 @@ public class Monitor extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable cpuTable;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -416,14 +519,13 @@ public class Monitor extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
-    private javax.swing.JTable jTable3;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
     private javax.swing.JTextField jTextField6;
+    private javax.swing.JTable memoryTable;
+    private javax.swing.JTable processTable;
     // End of variables declaration//GEN-END:variables
 }

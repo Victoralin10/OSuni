@@ -1,5 +1,7 @@
 package pe.edu.uni.fiis.so.util;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
@@ -15,10 +17,12 @@ import java.util.Properties;
 public class GlobalConfig {
 
     private static Properties properties = new Properties();
+    private static String file = null;
 
     public static void load(String file) {
         try {
             properties.load(new FileReader(file));
+            GlobalConfig.file = file;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -58,5 +62,15 @@ public class GlobalConfig {
             return defaultValue;
         }
         return Double.parseDouble(properties.getProperty(key).trim());
+    }
+
+    public static void save() {
+        if (file == null) return;
+
+        try {
+            properties.store(new FileOutputStream(new File(file)), "Global Config");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

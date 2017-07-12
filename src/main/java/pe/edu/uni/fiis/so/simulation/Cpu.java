@@ -1,5 +1,6 @@
 package pe.edu.uni.fiis.so.simulation;
 
+import pe.edu.uni.fiis.so.simulation.events.CpuEvent;
 import pe.edu.uni.fiis.so.util.Lib;
 
 /**
@@ -19,6 +20,12 @@ public class Cpu implements Runnable {
     private Thread thread;
     private Kernel kernel;
 
+    private double avgTimeRunning;
+    private long lastStatUpdateTime;
+    private long lastStateChangeTime;
+    private long runningTime;
+    private long lastStatRunTime;
+
     public Cpu() {
         this(null);
     }
@@ -27,6 +34,12 @@ public class Cpu implements Runnable {
         this.kernel = kernel;
         id = nextId++;
         state = INSTANTIATED;
+
+        this.avgTimeRunning = 0;
+        this.lastStatUpdateTime = 0;
+        this.runningTime = 0;
+        this.lastStateChangeTime = 0;
+        this.lastStatRunTime = 0;
     }
 
     public int getId() {
@@ -46,10 +59,26 @@ public class Cpu implements Runnable {
         setState(RUNNING);
     }
 
+    public void updateStatistic() {
+        long now = kernel.getMachine().getClock().getAbsoluteTime();
+        if (now/1000 != this.lastStatUpdateTime/1000) {
+            this.avgTimeRunning = (runningTime - lastStatRunTime)/10.0;
+            Simulation.getInstance().dispatchEvent("cpu.updateStats", new CpuEvent(this));
+            this.lastStatRunTime = runningTime;
+        }
+        this.lastStatUpdateTime = now;
+    }
+
     public void setState(int state) {
+        // updateStatistic();
         if (this.state != state) {
+            long now = kernel.getMachine().getClock().getAbsoluteTime();
+            if (this.state == RUNNING) {
+                runningTime += now - lastStateChangeTime;
+            }
             this.state = state;
-            // Dispatch event
+            this.lastStateChangeTime = now;
+            Simulation.getInstance().dispatchEvent("cpu.changeStatus", new CpuEvent(this));
         }
     }
 
@@ -61,6 +90,14 @@ public class Cpu implements Runnable {
     public void run() {
         Lib.assertTrue(kernel != null);
         kernel.run(this);
-        state = FINISHED;
+        setState(FINISHED);
+    }
+
+    public double getAvgTimeRunning() {
+        return avgTimeRunning;
+    }
+
+    public int getState() {
+        return state;
     }
 }

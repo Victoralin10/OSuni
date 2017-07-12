@@ -1,6 +1,6 @@
 # Here specify how much cpus the simulation includes.
 # The default value is 2, but it's possible to increase this quantity up to 8.
-machine.cpus=4
+machine.cpus=1
 
 # Here you could specify the policy for each cpu.
 # Available policies: fifo (First in First Out), rrbn (Round Robin)
@@ -8,28 +8,17 @@ machine.cpus=4
 # The default policy is fifo.
 # Example:
 kernel.policy.cpu0=fifo
-kernel.policy.cpu1=rrbn
-kernel.policy.cpu2=lifo
-kernel.policy.cpu3=sjf
-
-# Here you can specify process configuration
-# You can specify several types of processes.
-# Available statistical distributions: exp(lambda), uniform(a, b)
-process.p1=myProcessA
-process.p1.count=10
-process.p1.interruptionModel=exp(1.5)
-process.p1.durationTime=uniform(1000,10000)
-process.p1.size=10
-
-process.p2=myProcessB
-process.p2.count=5
-process.p2.interruptionModel=uniform(50, 100)
-process.p2.durationTime=uniform(1000,10000)
-process.p2.size=10
-
-# Here you can handle monitor options.
-monitor.enabledOnStartup=true
-monitor.refreshTime=50
+kernel.policy.cpu1=fifo
+kernel.policy.cpu2=fifo
+# kernel.policy.cpu3=fifo
 
 # Here you can handle other simulation options
-simulation.ut = 10
+simulation.ut = 2
+
+# DISC
+disc.readSpeed = 50000000
+disc.writeSpeed = 20000000
+
+# NETWORK
+net.uploadSpeed = 100000
+net.downloadSpeed = 1000000

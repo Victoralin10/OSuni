@@ -121,6 +121,8 @@ public class Kernel {
         kernelLock.unlock();
 
         while (!powerOffSignal) {
+            cpu.updateStatistic();
+
             PCB pcb = null;
             processManagerLock.lock();
             ArrayList<PCB> readys = new ArrayList<>();
