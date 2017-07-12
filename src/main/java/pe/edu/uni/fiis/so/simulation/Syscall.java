@@ -14,10 +14,9 @@ import pe.edu.uni.fiis.so.util.SizeParser;
 import pe.edu.uni.fiis.so.util.TimeParser;
 
 import java.awt.*;
-import java.util.ArrayList;
+import java.io.File;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Queue;
 
 /**
  * Created by vcueva on 6/28/17.
@@ -540,6 +539,26 @@ public class Syscall {
         } catch (AWTException | InterruptedException e) {
             e.printStackTrace();
         }
+        return 10;
+    }
+
+    public int checkUsb(Cpu cpu, PCB pcb, ArrayList<String> args, Integer maxTime) {
+        Map<String, Object> memory = pcb.getProcess().getMemory();
+
+        int l = File.listRoots().length;
+        System.out.println(Arrays.toString(File.listRoots()));
+        if (!memory.containsKey("old")) {
+            memory.put("old", l);
+        }
+
+        int old = (int) memory.get("old");
+        if (l < old) {
+            System.out.println("USB removed.");
+        } else if (l > old) {
+            System.out.println("USB Connected.");
+        }
+        memory.put("old", l);
+
         return 10;
     }
 

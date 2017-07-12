@@ -1,8 +1,10 @@
 package pe.edu.uni.fiis.so.simulation;
 
 
+import pe.edu.uni.fiis.so.simulation.memory.BestFitManager;
 import pe.edu.uni.fiis.so.simulation.memory.FirstFitManager;
 import pe.edu.uni.fiis.so.simulation.memory.MemoryManagerInterface;
+import pe.edu.uni.fiis.so.simulation.memory.WorstFitManager;
 import pe.edu.uni.fiis.so.simulation.policies.PolicyManager;
 import pe.edu.uni.fiis.so.simulation.process.*;
 import pe.edu.uni.fiis.so.simulation.process.Process;
@@ -10,6 +12,7 @@ import pe.edu.uni.fiis.so.simulation.services.DiscServiceRequest;
 import pe.edu.uni.fiis.so.simulation.services.MemoryServiceRequest;
 import pe.edu.uni.fiis.so.simulation.services.NetworkServiceRequest;
 import pe.edu.uni.fiis.so.simulation.services.StartupServiceRequest;
+import pe.edu.uni.fiis.so.util.GlobalConfig;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -112,7 +115,16 @@ public class Kernel {
         if (state == STATE_INSTANCED) {
             setState(STATE_LOADING);
             Simulation.getInstance().log("Cargando kernel en cpu" + cpu.getId());
-            memoryManager = new FirstFitManager(machine.getMemory());
+            // memoryManager = new FirstFitManager(machine.getMemory());
+            switch (GlobalConfig.getString("memory.policy", "firstFit")) {
+                case "bestFit": memoryManager = new BestFitManager(machine.getMemory());
+                        break;
+                case "worstFit": memoryManager = new WorstFitManager(machine.getMemory());
+                        break;
+                default:
+                    memoryManager = new FirstFitManager(machine.getMemory());
+                    break;
+            }
             processManager = new ProcessManager();
             policyManager = new PolicyManager(machine.getCpus());
             syscall = new Syscall(this);

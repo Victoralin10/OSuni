@@ -1,6 +1,6 @@
 # name: Keyboard
 # size: 10MB
-print "Testing beep"
+print "Testing teclado"
 sleep 5s
 keyboard "Hola mundo1"
 sleep 1s

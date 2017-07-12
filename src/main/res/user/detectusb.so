@@ -1,0 +1,8 @@
+# name: beep
+# size: 10MB
+print "Starting usb detector"
+loop:
+checkUsb
+sleep 1s
+jump loop
+end
