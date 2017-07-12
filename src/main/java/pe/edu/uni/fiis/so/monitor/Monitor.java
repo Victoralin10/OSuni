@@ -12,14 +12,20 @@ import pe.edu.uni.fiis.so.simulation.Simulation;
 import pe.edu.uni.fiis.so.simulation.events.MemoryEvent;
 import pe.edu.uni.fiis.so.simulation.events.SimulationActionListener;
 import pe.edu.uni.fiis.so.simulation.events.SimulationEvent;
+import pe.edu.uni.fiis.so.simulation.process.PCB;
 import pe.edu.uni.fiis.so.util.GlobalConfig;
 import pe.edu.uni.fiis.so.util.SizeParser;
+import pe.edu.uni.fiis.so.util.TimeParser;
 
 /**
  *
  * @author vcueva
  */
 public class Monitor extends javax.swing.JFrame {
+
+    private long freeMemory;
+    private long pageSize;
+    private long totalMemory;
 
     /**
      * Creates new form Monitor
@@ -28,6 +34,7 @@ public class Monitor extends javax.swing.JFrame {
         initComponents();
         initCpu();
         initMemory();
+        initProcess();
     }
 
     private void initCpu() {
@@ -82,15 +89,16 @@ public class Monitor extends javax.swing.JFrame {
     }
     
     private void initMemory() {
-        long ms = GlobalConfig.getLong("memory.size", 8L<<30);
-        long mps = GlobalConfig.getLong("memory.pageSize", 4<<20);
-        int np = (int) (ms/mps);
-        jTextField3.setText(SizeParser.toString(ms));
-        jTextField2.setText(SizeParser.toString(mps));
+        this.totalMemory = GlobalConfig.getLong("memory.size", 8L<<30);
+        this.pageSize = GlobalConfig.getLong("memory.pageSize", 4<<20);
+        int np = (int) (totalMemory/pageSize);
+        this.freeMemory = totalMemory;
+        jTextField3.setText(SizeParser.toString(totalMemory));
+        jTextField2.setText(SizeParser.toString(pageSize));
         jTextField1.setText(np + "");
         jTextField6.setText(GlobalConfig.getString("memory.policy", "firstFit"));
         jTextField4.setText(0 + "");
-        jTextField5.setText(SizeParser.toString(ms));
+        jTextField5.setText(SizeParser.toString(totalMemory));
 
         DefaultTableModel dtm = (DefaultTableModel) memoryTable.getModel();
         for (int i = 0; i < np; i++) {
@@ -98,10 +106,10 @@ public class Monitor extends javax.swing.JFrame {
             row[0] = i;
             row[1] = "free";
             row[2] = -1;
-            row[3] = mps*i;
+            row[3] = pageSize*i;
             dtm.addRow(row);
         }
-        
+
         Simulation.getInstance().on(new SimulationActionListener("memory.update") {
             @Override
             public void actionPerformed(SimulationEvent event) {
@@ -112,12 +120,63 @@ public class Monitor extends javax.swing.JFrame {
                         memoryTable.setValueAt("usado", page, 1);
                         memoryTable.setValueAt(pid, page, 2);
                     }
+                    freeMemory -= pageSize*pages.size();
                 } else {
                     for (int page : pages) {
                         memoryTable.setValueAt("free", page, 1);
                         memoryTable.setValueAt(-1, page, 2);
                     }
+                    freeMemory += pageSize*pages.size();
                 }
+                jTextField5.setText(SizeParser.toString(freeMemory));
+                jTextField4.setText(SizeParser.toString(totalMemory - freeMemory));
+            }
+        });
+    }
+    
+    private void initProcess() {
+        Simulation.getInstance().on(new SimulationActionListener("process.new") {
+            @Override
+            public void actionPerformed(SimulationEvent event) {
+                DefaultTableModel dtm = (DefaultTableModel) processTable.getModel();
+                Object[] row = new Object[9];
+                row[0] = event.getInteger("pid");
+                row[1] = event.getInteger("priority");
+                row[2] = "nuevo";
+                row[3] = "-1";
+                row[4] = TimeParser.format(0);
+                row[5] = TimeParser.format(0);
+                row[6] = TimeParser.format(0);
+                row[7] = TimeParser.format(event.getLong("time"));
+                row[8] = "";
+                dtm.addRow(row);
+            }
+        });
+        
+        Simulation.getInstance().on(new SimulationActionListener("process.changeStatus") {
+            @Override
+            public void actionPerformed(SimulationEvent event) {
+                int pid = event.getInteger("pid");
+                int nState = event.getInteger("newState");
+                if (pid >  processTable.getRowCount()) return;
+                switch (nState) {
+                    case PCB.READY:
+                        processTable.setValueAt("listo", pid - 1, 2);
+                        break;
+                    case PCB.RUNNING:
+                        processTable.setValueAt("ejecutando", pid - 1, 2);
+                        break;
+                    case PCB.WAITING:
+                        processTable.setValueAt("esperando", pid - 1, 2);
+                        break;
+                    case PCB.FINISHED:
+                        processTable.setValueAt("terminado", pid - 1, 2);
+                        processTable.setValueAt(TimeParser.toString(event.getLong("time")), pid - 1, 8);
+                        break;
+                }
+                int cpuN = event.getInteger("cpu");
+                processTable.setValueAt(cpuN>=0?"cpu"+cpuN:"-1", pid - 1, 3);
+                processTable.setValueAt(event.getInteger("priority"), pid - 1, 1);
             }
         });
     }
@@ -170,11 +229,11 @@ public class Monitor extends javax.swing.JFrame {
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 781, Short.MAX_VALUE)
+            .addGap(0, 882, Short.MAX_VALUE)
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 487, Short.MAX_VALUE)
+            .addGap(0, 514, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Simulacion", jPanel6);
@@ -212,7 +271,7 @@ public class Monitor extends javax.swing.JFrame {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 723, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 824, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
@@ -255,7 +314,7 @@ public class Monitor extends javax.swing.JFrame {
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 227, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -276,7 +335,7 @@ public class Monitor extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -320,7 +379,7 @@ public class Monitor extends javax.swing.JFrame {
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 326, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -377,7 +436,7 @@ public class Monitor extends javax.swing.JFrame {
                     .addComponent(jTextField6, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
                     .addComponent(jTextField5)
                     .addComponent(jTextField4))
-                .addContainerGap(112, Short.MAX_VALUE))
+                .addContainerGap(213, Short.MAX_VALUE))
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -435,11 +494,11 @@ public class Monitor extends javax.swing.JFrame {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 781, Short.MAX_VALUE)
+            .addGap(0, 882, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 487, Short.MAX_VALUE)
+            .addGap(0, 514, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("I/O", jPanel3);
@@ -478,7 +537,7 @@ public class Monitor extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1)
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 541, Short.MAX_VALUE)
         );
 
         pack();

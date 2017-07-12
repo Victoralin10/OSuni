@@ -11,6 +11,7 @@ public class MemoryEvent extends SimulationEvent {
     public static final int FREE = 2;
 
     public MemoryEvent(int type, int pid, List<Integer> pages) {
+        super();
         putValue("type", type);
         putValue("pages", pages);
         putValue("pid", pid);

@@ -58,4 +58,14 @@ public class TimeParser {
 
         return ans.toString();
     }
+
+    public static String format(long milliseconds) {
+        int ms = (int) (milliseconds%1000);
+        milliseconds /= 1000;
+        int s = (int) (milliseconds%60);
+        milliseconds /= 60;
+        int m = (int) (milliseconds%60);
+        int h = (int) (milliseconds/60);
+        return String.format("%02d:%02d:%02d:%d", h, m, s, ms);
+    }
 }

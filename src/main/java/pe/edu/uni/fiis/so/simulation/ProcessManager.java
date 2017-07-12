@@ -1,5 +1,6 @@
 package pe.edu.uni.fiis.so.simulation;
 
+import pe.edu.uni.fiis.so.simulation.events.NewProcess;
 import pe.edu.uni.fiis.so.simulation.process.PCB;
 
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ public class ProcessManager {
 
     public void addProcess(PCB pcb) {
         this.processes.add(pcb);
+        Simulation.getInstance().dispatchEvent("process.new", new NewProcess(pcb));
     }
 
     public void removeProcess(PCB pcb) {

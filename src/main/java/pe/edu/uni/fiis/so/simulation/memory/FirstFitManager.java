@@ -68,7 +68,7 @@ public class FirstFitManager implements MemoryManagerInterface {
         ArrayList<Integer> pgs = new ArrayList<>();
         for (int i = 0; i < memory.getTotalPages(); i++) {
             if (pid == map[i]) {
-                map[i] = 0;
+                map[i] = -1;
                 pgs.add(i);
             }
         }

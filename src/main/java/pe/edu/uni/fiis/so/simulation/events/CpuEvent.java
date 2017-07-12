@@ -8,6 +8,7 @@ import pe.edu.uni.fiis.so.simulation.Cpu;
 public class CpuEvent extends SimulationEvent {
 
     public CpuEvent(Cpu cpu) {
+        super();
         putValue("id", cpu.getId());
         putValue("status", cpu.getState());
         putValue("avgUsage", cpu.getAvgTimeRunning());

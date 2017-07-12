@@ -139,6 +139,7 @@ public class Kernel {
             }
             if (processManager.getReadyQueue().size() > 0) {
                 pcb = policyManager.getPolicy(cpu).next(processManager.getReadyQueue());
+                pcb.setCpuNumber(cpu.getId());
                 processManager.toRunning(pcb);
             }
             processManagerLock.unlock();
@@ -162,6 +163,7 @@ public class Kernel {
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     e.printStackTrace();
                 }
+                pcb.setCpuNumber(-1);
 
                 processManagerLock.lock();
                 if (p.isFinished()) {

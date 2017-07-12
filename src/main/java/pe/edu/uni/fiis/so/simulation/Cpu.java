@@ -61,25 +61,12 @@ public class Cpu implements Runnable {
 
     public void updateStatistic() {
         long now = kernel.getMachine().getClock().getAbsoluteTime();
-        if (now/1000 != this.lastStatUpdateTime/1000) {
-            this.avgTimeRunning = (runningTime - lastStatRunTime)/10.0;
+        if (now / 1000 != this.lastStatUpdateTime / 1000) {
+            this.avgTimeRunning = (runningTime - lastStatRunTime) / 10.0;
             Simulation.getInstance().dispatchEvent("cpu.updateStats", new CpuEvent(this));
             this.lastStatRunTime = runningTime;
         }
         this.lastStatUpdateTime = now;
-    }
-
-    public void setState(int state) {
-        // updateStatistic();
-        if (this.state != state) {
-            long now = kernel.getMachine().getClock().getAbsoluteTime();
-            if (this.state == RUNNING) {
-                runningTime += now - lastStateChangeTime;
-            }
-            this.state = state;
-            this.lastStateChangeTime = now;
-            Simulation.getInstance().dispatchEvent("cpu.changeStatus", new CpuEvent(this));
-        }
     }
 
     public void setKernel(Kernel kernel) {
@@ -99,5 +86,18 @@ public class Cpu implements Runnable {
 
     public int getState() {
         return state;
+    }
+
+    public void setState(int state) {
+        // updateStatistic();
+        if (this.state != state) {
+            long now = kernel.getMachine().getClock().getAbsoluteTime();
+            if (this.state == RUNNING) {
+                runningTime += now - lastStateChangeTime;
+            }
+            this.state = state;
+            this.lastStateChangeTime = now;
+            Simulation.getInstance().dispatchEvent("cpu.changeStatus", new CpuEvent(this));
+        }
     }
 }

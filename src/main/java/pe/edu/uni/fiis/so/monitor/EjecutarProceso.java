@@ -5,6 +5,8 @@
  */
 package pe.edu.uni.fiis.so.monitor;
 
+import java.io.InputStream;
+import java.util.Scanner;
 import pe.edu.uni.fiis.so.simulation.Simulation;
 
 /**
@@ -18,6 +20,17 @@ public class EjecutarProceso extends javax.swing.JFrame {
      */
     public EjecutarProceso() {
         initComponents();
+        init();
+    }
+    
+    private void init() {
+        jComboBox1.removeAllItems();
+
+        InputStream st = getClass().getClassLoader().getResourceAsStream("user/");
+        Scanner scanner = new Scanner(st);
+        while (scanner.hasNextLine()) {
+            jComboBox1.addItem(scanner.nextLine());
+        }
     }
 
     /**
@@ -33,8 +46,8 @@ public class EjecutarProceso extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
         jTextField2 = new javax.swing.JTextField();
+        jComboBox1 = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Ejecutar Proceso");
@@ -60,6 +73,8 @@ public class EjecutarProceso extends javax.swing.JFrame {
 
         jTextField2.setText("1");
 
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "program1.so" }));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -70,14 +85,15 @@ public class EjecutarProceso extends javax.swing.JFrame {
                     .addComponent(jLabel1)
                     .addComponent(jLabel2))
                 .addGap(21, 21, 21)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton1)
                         .addGap(53, 53, 53)
-                        .addComponent(jButton2))
-                    .addComponent(jTextField1)
+                        .addComponent(jButton2)
+                        .addGap(0, 83, Short.MAX_VALUE))
+                    .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jTextField2))
-                .addContainerGap(58, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -85,12 +101,12 @@ public class EjecutarProceso extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2))
@@ -104,7 +120,7 @@ public class EjecutarProceso extends javax.swing.JFrame {
         try {
             int ni = Integer.parseInt(jTextField2.getText().trim());
             for (int i = 0; i < ni; i++) {
-                Simulation.getInstance().getShellCommandsQueue().add("run " + jTextField1.getText());
+                Simulation.getInstance().getShellCommandsQueue().add("run " + jComboBox1.getSelectedItem());
             }
         } catch (NumberFormatException e) {
         }
@@ -118,9 +134,9 @@ public class EjecutarProceso extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     // End of variables declaration//GEN-END:variables
 }

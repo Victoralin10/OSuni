@@ -354,4 +354,3 @@ __pycache__/
 config.ini
 run.sh
 !src/main/res/bin
-*.form
