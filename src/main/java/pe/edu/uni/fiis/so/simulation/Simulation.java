@@ -1,5 +1,6 @@
 package pe.edu.uni.fiis.so.simulation;
 
+import pe.edu.uni.fiis.so.simulation.events.LogEvent;
 import pe.edu.uni.fiis.so.simulation.events.SimulationActionListener;
 import pe.edu.uni.fiis.so.simulation.events.SimulationEvent;
 
@@ -25,7 +26,8 @@ public class Simulation {
             "cpu.changeStatus",
             "cpu.updateStats",
             "memory.update",
-            "clock.update"
+            "clock.update",
+            "log.update"
     };
 
     private int status;
@@ -103,5 +105,9 @@ public class Simulation {
 
     public Queue<String> getShellCommandsQueue() {
         return shellCommandsQueue;
+    }
+
+    public void log(String line) {
+        Simulation.getInstance().dispatchEvent("log.update", new LogEvent(line));
     }
 }

@@ -7,6 +7,7 @@ package pe.edu.uni.fiis.so.monitor;
 
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.DefaultCaret;
 import pe.edu.uni.fiis.so.simulation.Simulation;
 import pe.edu.uni.fiis.so.simulation.events.MemoryEvent;
 import pe.edu.uni.fiis.so.simulation.events.SimulationActionListener;
@@ -35,6 +36,8 @@ public class Monitor extends javax.swing.JFrame {
         initCpu();
         initMemory();
         initProcess();
+        
+        initLog();
     }
     
     private void initSimulation() {
@@ -200,6 +203,20 @@ public class Monitor extends javax.swing.JFrame {
             }
         });
     }
+    
+    private void initLog() {
+        DefaultCaret caret = (DefaultCaret) jTextArea1.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+        Simulation.getInstance().on(new SimulationActionListener("log.update") {
+            @Override
+            public void actionPerformed(SimulationEvent event) {
+                String line = event.getString("line");
+                long t = event.getLong("timestamp");
+                jTextArea1.append(TimeParser.format(t) + "> " + line + "\n");
+                //jTextArea1.
+            }
+        });
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -240,6 +257,9 @@ public class Monitor extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         jTextField6 = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
+        jPanel10 = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -575,6 +595,23 @@ public class Monitor extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("I/O", jPanel3);
 
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jScrollPane4.setViewportView(jTextArea1);
+
+        javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
+        jPanel10.setLayout(jPanel10Layout);
+        jPanel10Layout.setHorizontalGroup(
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 882, Short.MAX_VALUE)
+        );
+        jPanel10Layout.setVerticalGroup(
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 514, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("Log", jPanel10);
+
         jMenu1.setText("File");
 
         jMenuItem1.setText("Salir");
@@ -640,6 +677,7 @@ public class Monitor extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -651,7 +689,9 @@ public class Monitor extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;

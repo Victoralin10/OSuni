@@ -3,5 +3,5 @@
 print "Starting Shell"
 loop:
 shellService
-sleep 10ms
+sleep 200ms
 jump loop

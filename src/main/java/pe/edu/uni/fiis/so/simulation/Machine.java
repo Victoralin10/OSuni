@@ -1,5 +1,6 @@
 package pe.edu.uni.fiis.so.simulation;
 
+import pe.edu.uni.fiis.so.simulation.events.LogEvent;
 import pe.edu.uni.fiis.so.simulation.memory.Memory;
 import pe.edu.uni.fiis.so.util.GlobalConfig;
 import pe.edu.uni.fiis.so.util.Lib;
@@ -33,10 +34,12 @@ public class Machine {
     }
 
     public void powerOn() {
+        Simulation.getInstance().log("Encendiendo la maqhina virtual.");
+        clock.start();
+        Simulation.getInstance().log("Arrancando cpus");
         for (Cpu cpu : cpus) {
             cpu.start();
         }
-        clock.start();
     }
 
     public void powerOff() {

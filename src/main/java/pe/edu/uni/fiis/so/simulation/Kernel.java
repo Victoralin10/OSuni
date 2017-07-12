@@ -111,6 +111,7 @@ public class Kernel {
         kernelLock.lock();
         if (state == STATE_INSTANCED) {
             setState(STATE_LOADING);
+            Simulation.getInstance().log("Cargando kernel en cpu" + cpu.getId());
             memoryManager = new FirstFitManager(machine.getMemory());
             processManager = new ProcessManager();
             policyManager = new PolicyManager(machine.getCpus());
@@ -120,9 +121,11 @@ public class Kernel {
         }
         kernelLock.unlock();
 
+        Simulation.getInstance().log("cpu" + cpu.getId() + " ejecutando kernel.");
         while (!powerOffSignal) {
             cpu.updateStatistic();
 
+            Simulation.getInstance().log("cpu" + cpu.getId() + ": seleccionando proceso listo para ejecutar.");
             PCB pcb = null;
             processManagerLock.lock();
             ArrayList<PCB> readys = new ArrayList<>();
@@ -145,6 +148,7 @@ public class Kernel {
             processManagerLock.unlock();
 
             if (pcb != null) {
+                Simulation.getInstance().log("cpu" + cpu.getId() + ": ejecutando pid " + pcb.getPid());
                 ProgramCounter pc = pcb.getProgramCounter();
                 Process p = pcb.getProcess();
                 Sentence sentence = p.getCode().getSentenceByAddress(pc.getCurrentAddress());
@@ -167,19 +171,23 @@ public class Kernel {
 
                 processManagerLock.lock();
                 if (p.isFinished()) {
+                    Simulation.getInstance().log("cpu" + cpu.getId() + ": finalizando pid " + pcb.getPid());
                     processManager.removeProcess(pcb);
                     memoryLock.lock();
                     memoryManager.free(pcb.getPid());
                     memoryLock.unlock();
                 } else if (p.isErrored()) {
+                    Simulation.getInstance().log("cpu" + cpu.getId() + ": error pid " + pcb.getPid());
                     processManager.removeProcess(pcb);
                     memoryLock.lock();
                     memoryManager.free(pcb.getPid());
                     memoryLock.unlock();
                 } else if (!p.isInterrupted()) {
+                    Simulation.getInstance().log("cpu" + cpu.getId() + ": tiempo en cpu agotado " + pcb.getPid());
                     pc.advance();
                     processManager.toReady(pcb);
                 } else {
+                    Simulation.getInstance().log("cpu" + cpu.getId() + ": Proceso con interrupcion " + pcb.getPid());
                     processManager.toWaiting(pcb);
                 }
                 processManagerLock.unlock();

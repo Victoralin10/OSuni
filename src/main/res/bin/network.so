@@ -3,5 +3,5 @@
 print "Starting Network Manger"
 loop:
 networkService
-sleep 10ms
+sleep 50ms
 jump loop

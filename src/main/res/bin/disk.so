@@ -3,5 +3,5 @@
 print "Starting Disk Manger"
 loop:
 diskService
-sleep 10ms
+sleep 50ms
 jump loop

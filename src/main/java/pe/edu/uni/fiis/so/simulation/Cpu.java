@@ -56,6 +56,7 @@ public class Cpu implements Runnable {
         thread.setDaemon(true);
         thread.start();
 
+        Simulation.getInstance().log("Iniciando cpu" + getId());
         setState(RUNNING);
     }
 

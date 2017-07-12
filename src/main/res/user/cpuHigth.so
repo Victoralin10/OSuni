@@ -1,0 +1,9 @@
+# name: CpuHigh
+# size: 50Mb
+rsleep uniform(50,200)
+run 2s
+rsleep uniform(50,200)
+run 2s
+rsleep uniform(50,200)
+run 2s
+end
