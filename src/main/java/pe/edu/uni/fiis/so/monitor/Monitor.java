@@ -216,6 +216,7 @@ public class Monitor extends javax.swing.JFrame {
             public void actionPerformed(SimulationEvent event) {
                 if (nroLineas > 10000) {
                     jTextArea1.setText("");
+                    nroLineas = 0;
                 }
                 String line = event.getString("line");
                 long t = event.getLong("timestamp");
