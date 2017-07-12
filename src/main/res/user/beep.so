@@ -1,0 +1,12 @@
+# name: beep
+# size: 10MB
+print "Testing beep"
+sleep 1s
+beep
+sleep 1s
+beep
+sleep 1s
+beep
+sleep 1s
+print "End test beep"
+end

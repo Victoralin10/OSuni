@@ -21,6 +21,8 @@ public class EjecutarProceso extends javax.swing.JFrame {
     public EjecutarProceso() {
         initComponents();
         init();
+
+        setLocationRelativeTo(null);
     }
     
     private void init() {

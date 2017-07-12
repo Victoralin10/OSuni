@@ -18,6 +18,7 @@ public class ConfigView extends javax.swing.JFrame {
      */
     public ConfigView() {
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     /**

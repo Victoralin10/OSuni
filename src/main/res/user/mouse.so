@@ -1,0 +1,12 @@
+# name: testMouse
+# size: 10MB
+print "Testing mouse"
+sleep 1s
+mouse 10 10
+sleep 1s
+mouse 100 100
+sleep 1s
+mouse 300 300
+sleep 1s
+print "End test mouse"
+end

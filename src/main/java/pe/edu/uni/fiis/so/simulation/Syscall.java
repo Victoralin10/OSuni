@@ -13,6 +13,7 @@ import pe.edu.uni.fiis.so.util.GlobalConfig;
 import pe.edu.uni.fiis.so.util.SizeParser;
 import pe.edu.uni.fiis.so.util.TimeParser;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,21 +42,28 @@ public class Syscall {
     }
 
     public int sleep(Cpu cpu, PCB pcb, ArrayList<String> args, Integer maxTime) {
-        // System.out.println("sleep here");
-        if (pcb.getProcess().getInterruption() != null) {
-            pcb.getProcess().setInterruption(null);
-            return 1;
-        }
-
         if (args.size() == 0) {
             pcb.getProcess().setErrored(true);
             return 5;
         }
 
-        long currentTime = kernel.getMachine().getClock().getAbsoluteTime();
-        SleepInterruption si = new SleepInterruption(currentTime, TimeParser.parse(args));
-        pcb.getProcess().setInterrupted(true);
-        pcb.getProcess().setInterruption(si);
+        Map<String, Object> memory = pcb.getProcess().getMemory();
+        if (!memory.containsKey("state")) {
+            memory.put("state", 0);
+        }
+
+        if (memory.get("state").equals(0)) {
+            long currentTime = kernel.getMachine().getClock().getAbsoluteTime();
+            SleepInterruption si = new SleepInterruption(currentTime, TimeParser.parse(args));
+            pcb.getProcess().setInterrupted(true);
+            pcb.getProcess().setInterruption(si);
+            memory.put("state", 1);
+        } else {
+            pcb.getProcess().setInterruption(null);
+            memory.put("state", 0);
+            return 5;
+        }
+
         return 10;
     }
 
@@ -458,6 +466,50 @@ public class Syscall {
             memory.put("state", 0);
         }
 
+        return 10;
+    }
+
+    public int malloc(Cpu cpu, PCB pcb, ArrayList<String> args, Integer maxTime) {
+        if (args.size() == 0) {
+            pcb.getProcess().setErrored(true);
+            return 2;
+        }
+
+        Map<String, Object> memory = pcb.getProcess().getMemory();
+        if (!memory.containsKey("state")) {
+            memory.put("state", 0);
+        }
+
+        if (memory.get("state").equals(0)) {
+            MemoryInterruption inte = new MemoryInterruption();
+            pcb.getProcess().setInterrupted(true);
+            pcb.getProcess().setInterruption(inte);
+            kernel.getMemoryServiceQueue().add(new MemoryServiceRequest(SizeParser.parse(args), pcb, inte));
+            memory.put("state", 1);
+        } else {
+            memory.put("state", 0);
+            pcb.getProcess().setInterruption(null);
+        }
+
+        return 10;
+    }
+
+    public int mouse(Cpu cpu, PCB pcb, ArrayList<String> args, Integer maxTime) {
+        if (args.size() != 2) {
+            return 5;
+        }
+        try {
+            Robot robot = new Robot();
+            robot.mouseMove(Integer.parseInt(args.get(0)), Integer.parseInt(args.get(1)));
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
+        return 10;
+    }
+
+    public int beep(Cpu cpu, PCB pcb, ArrayList<String> args, Integer maxTime) {
+        java.awt.Toolkit.getDefaultToolkit().beep();
+        System.out.print("\007");
         return 10;
     }
 

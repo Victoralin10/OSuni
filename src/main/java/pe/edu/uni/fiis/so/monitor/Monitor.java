@@ -36,8 +36,9 @@ public class Monitor extends javax.swing.JFrame {
         initCpu();
         initMemory();
         initProcess();
-        
+
         initLog();
+        setLocationRelativeTo(null);
     }
     
     private void initSimulation() {

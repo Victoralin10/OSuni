@@ -1,0 +1,11 @@
+# name: testMemory
+# size: 10MB
+print "Starting testMemory"
+sleep 2s
+malloc 500MB
+sleep 5s
+malloc 500MB
+sleep 5s
+malloc 500MB
+print "End testMemory"
+end
