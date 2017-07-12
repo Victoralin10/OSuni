@@ -8,6 +8,4 @@
 ### Memory
 `memory.size`
 
-`memory.pag`
-    
-### 
+`memory.pageSize`

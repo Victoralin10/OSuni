@@ -1,6 +1,6 @@
 # Here specify how much cpus the simulation includes.
 # The default value is 2, but it's possible to increase this quantity up to 8.
-machine.cpus=3
+machine.cpus=1
 
 # Here you could specify the policy for each cpu.
 # Available policies: fifo (First in First Out), rrbn (Round Robin)
@@ -16,6 +16,7 @@ kernel.policy.cpu2=sjf
 simulation.ut = 2
 
 # MEMORY
+# Policies: firstFit, bestFit, worstFit
 memory.size = 8Gb
 memory.pageSize = 4Mb
 memory.policy = firstFit
