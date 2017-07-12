@@ -47,8 +47,8 @@ public class SimulationEvent {
     public Object getObject(String key) {
         return values.get(key);
     }
-    
+
     public Boolean getBolean(String key) {
-        return  (Boolean) values.get(key);
+        return (Boolean) values.get(key);
     }
 }

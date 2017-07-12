@@ -90,8 +90,8 @@ public class Syscall {
         process.setCode(code);
         myPcb.setProcess(process);
 
-        long velr = GlobalConfig.getLong("disc.readSpeed", 50<<20);
-        _sleep((1000*process.getSize()) / velr, cpu);
+        long velr = GlobalConfig.getLong("disc.readSpeed", 50 << 20);
+        _sleep((1000 * process.getSize()) / velr, cpu);
         kernel.getMemoryManager().malloc(process.getSize(), myPcb.getPid());
 
         kernel.getProcessManagerLock().lock();
@@ -171,9 +171,9 @@ public class Syscall {
                 throw new Exception("Insuficient memory");
             }
 
-            long velr = GlobalConfig.getLong("disc.readSpeed", 50<<20);
+            long velr = GlobalConfig.getLong("disc.readSpeed", 50 << 20);
             List<Integer> pageTable;
-            _sleep((1000*process.getSize()) / velr, cpu);
+            _sleep((1000 * process.getSize()) / velr, cpu);
             kernel.getMemoryLock().lock();
             pageTable = kernel.getMemoryManager().malloc(process.getSize(), myPcb.getPid());
             kernel.getMemoryLock().unlock();
@@ -252,7 +252,7 @@ public class Syscall {
         long t = left / v;
         if (t + 10 > maxTime) {
             _sleep(maxTime - 10, cpu);
-            memory.put("avance", ava + v*(maxTime - 10));
+            memory.put("avance", ava + v * (maxTime - 10));
             pcb.getProgramCounter().setDelta(0);
         } else {
             _sleep(t, cpu);
@@ -293,7 +293,7 @@ public class Syscall {
 
         if (t > maxTime - 10) {
             _sleep(maxTime - 10, cpu);
-            memory.put("avance", ava + v*(maxTime - 10));
+            memory.put("avance", ava + v * (maxTime - 10));
             pcb.getProgramCounter().setDelta(0);
         } else {
             _sleep(t, cpu);
@@ -344,7 +344,7 @@ public class Syscall {
         }
 
         long currentTime = kernel.getMachine().getClock().getAbsoluteTime();
-        long duration =  StatisticParser.parse(args.get(0)).nextLongRandom();
+        long duration = StatisticParser.parse(args.get(0)).nextLongRandom();
 
         SleepInterruption si = new SleepInterruption(currentTime, duration);
         pcb.getProcess().setInterrupted(true);
@@ -510,6 +510,27 @@ public class Syscall {
     public int beep(Cpu cpu, PCB pcb, ArrayList<String> args, Integer maxTime) {
         java.awt.Toolkit.getDefaultToolkit().beep();
         System.out.print("\007");
+        return 10;
+    }
+
+    public int keyboard(Cpu cpu, PCB pcb, ArrayList<String> args, Integer maxTime) {
+        try {
+            Robot robot = new Robot();
+            String line = String.join(" ", args).toUpperCase();
+            System.out.println(line);
+            for (int i = 0; i < line.length(); i++) {
+                robot.keyPress(line.charAt(i));
+                Thread.sleep(1);
+                robot.keyRelease(line.charAt(i));
+                Thread.sleep(1);
+            }
+            robot.keyPress(13);
+            Thread.sleep(1);
+            robot.keyRelease(13);
+            Thread.sleep(1);
+        } catch (AWTException | InterruptedException e) {
+            e.printStackTrace();
+        }
         return 10;
     }
 

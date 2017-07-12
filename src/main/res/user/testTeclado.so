@@ -1,0 +1,12 @@
+# name: Keyboard
+# size: 10MB
+print "Testing beep"
+sleep 5s
+keyboard "Hola mundo1"
+sleep 1s
+keyboard "Hola mundo2"
+sleep 1s
+keyboard "Hola mundo3"
+sleep 1s
+print "End test teclado"
+end

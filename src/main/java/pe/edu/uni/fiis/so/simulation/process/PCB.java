@@ -61,19 +61,19 @@ public class PCB implements Comparable {
     private long totalRunningTime;
     private long runningCount = 0;
     private double avgRunningTime = 0;
-    private long minRunningTime = (1<<20);
+    private long minRunningTime = (1 << 20);
     private long maxRunningTime = 0;
 
     private long totalWaitingTime = 0;
     private long waitingCount = 0;
     private double avgWaitingTime = 0;
-    private long minWaitingTime = (1<<20);
+    private long minWaitingTime = (1 << 20);
     private long maxWaitingTime = 0;
 
     private long totalReadyTime = 0;
     private long readyCount = 0;
     private double avgReadyTime = 0;
-    private long minReadyTime = (1<<20);
+    private long minReadyTime = (1 << 20);
     private long maxReadyTime = 0;
     // END STATISTICS
 
@@ -126,19 +126,19 @@ public class PCB implements Comparable {
         if (this.processStatus == RUNNING) {
             totalRunningTime += delta;
             runningCount++;
-            avgRunningTime = totalRunningTime/((double)runningCount);
+            avgRunningTime = totalRunningTime / ((double) runningCount);
             minRunningTime = Math.min(minRunningTime, delta);
             maxRunningTime = Math.max(maxRunningTime, delta);
         } else if (this.processStatus == WAITING) {
             totalWaitingTime += delta;
             waitingCount++;
-            avgWaitingTime = totalWaitingTime/((double)waitingCount);
+            avgWaitingTime = totalWaitingTime / ((double) waitingCount);
             minWaitingTime = Math.min(minWaitingTime, delta);
             maxWaitingTime = Math.max(maxWaitingTime, delta);
         } else if (this.processStatus == READY) {
             totalReadyTime += delta;
             readyCount++;
-            avgReadyTime = totalReadyTime/((double) readyCount);
+            avgReadyTime = totalReadyTime / ((double) readyCount);
             minReadyTime = Math.min(minReadyTime, delta);
             maxReadyTime = Math.max(maxReadyTime, delta);
         }

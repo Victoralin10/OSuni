@@ -1,6 +1,5 @@
 package pe.edu.uni.fiis.so.simulation;
 
-import pe.edu.uni.fiis.so.simulation.events.LogEvent;
 import pe.edu.uni.fiis.so.simulation.memory.Memory;
 import pe.edu.uni.fiis.so.util.GlobalConfig;
 import pe.edu.uni.fiis.so.util.Lib;
