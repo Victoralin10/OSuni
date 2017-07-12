@@ -3,6 +3,7 @@ package pe.edu.uni.fiis.so.simulation;
 import pe.edu.uni.fiis.so.simulation.memory.Memory;
 import pe.edu.uni.fiis.so.util.GlobalConfig;
 import pe.edu.uni.fiis.so.util.Lib;
+import pe.edu.uni.fiis.so.util.SizeParser;
 
 /**
  * Created by vcueva on 6/24/17.
@@ -25,8 +26,8 @@ public class Machine {
             cpus[i].setKernel(kernel);
         }
 
-        long size = GlobalConfig.getLong("memory.size", Memory.DEFAULT_MEMORY_SIZE);
-        int pageSize = GlobalConfig.getInt("memory.pageSize", Memory.DEFAULT_PAGE_SIZE);
+        long size = SizeParser.parse(GlobalConfig.getString("memory.size", "8Gb"));
+        int pageSize = (int) SizeParser.parse(GlobalConfig.getString("memory.pageSize", "4Mb"));
         memory = new Memory(size, pageSize);
 
         clock = new Clock();

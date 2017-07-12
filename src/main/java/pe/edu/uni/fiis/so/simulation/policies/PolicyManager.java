@@ -19,12 +19,17 @@ public class PolicyManager {
         for (int i = 0; i < cpus.length; i++) {
             String policyName = GlobalConfig.getString("kernel.policy.cpu" + i, "fifo");
             PolicyInterface policy;
-            if(policyName.equals("lifo")) {
-                policy = new LifoPolicy();
-            } else {
-                policy = new FifoPolicy();
+            switch (policyName) {
+                case "lifo":
+                    policy = new LifoPolicy();
+                    break;
+                case "sjf":
+                    policy = new SjfPolicy();
+                    break;
+                default:
+                    policy = new FifoPolicy();
+                    break;
             }
-
             policies.put(cpus[i].getId(), policy);
         }
     }

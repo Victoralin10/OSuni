@@ -1,6 +1,6 @@
 # Here specify how much cpus the simulation includes.
 # The default value is 2, but it's possible to increase this quantity up to 8.
-machine.cpus=1
+machine.cpus=3
 
 # Here you could specify the policy for each cpu.
 # Available policies: fifo (First in First Out), rrbn (Round Robin)
@@ -8,12 +8,17 @@ machine.cpus=1
 # The default policy is fifo.
 # Example:
 kernel.policy.cpu0=fifo
-kernel.policy.cpu1=fifo
-kernel.policy.cpu2=fifo
+kernel.policy.cpu1=lifo
+kernel.policy.cpu2=sjf
 # kernel.policy.cpu3=fifo
 
 # Here you can handle other simulation options
 simulation.ut = 2
+
+# MEMORY
+memory.size = 8Gb
+memory.pageSize = 4Mb
+memory.policy = firstFit
 
 # DISC
 disc.readSpeed = 50000000

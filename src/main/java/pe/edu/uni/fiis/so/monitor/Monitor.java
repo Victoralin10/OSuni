@@ -103,8 +103,9 @@ public class Monitor extends javax.swing.JFrame {
     }
     
     private void initMemory() {
-        this.totalMemory = GlobalConfig.getLong("memory.size", 8L<<30);
-        this.pageSize = GlobalConfig.getLong("memory.pageSize", 4<<20);
+        this.totalMemory = SizeParser.parse(GlobalConfig.getString("memory.size", "8Gb"));
+        this.pageSize = SizeParser.parse(GlobalConfig.getString("memory.pageSize", "4Mb"));
+
         int np = (int) (totalMemory/pageSize);
         this.freeMemory = totalMemory;
         jTextField3.setText(SizeParser.toString(totalMemory));

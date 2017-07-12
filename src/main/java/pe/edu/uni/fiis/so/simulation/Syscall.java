@@ -333,7 +333,7 @@ public class Syscall {
             }
 
             kernel.getProcessManagerLock().lock();
-            kernel.getProcessManager().removeProcess(pid);
+            kernel.getProcessManager().getProcessByPid(pid).getProcess().setFinished(true);
             kernel.getProcessManagerLock().unlock();
         }
 

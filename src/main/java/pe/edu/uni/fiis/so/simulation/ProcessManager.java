@@ -52,7 +52,7 @@ public class ProcessManager {
         processes.remove(index);
     }
 
-    private PCB getProcessByPid(int pid) {
+    public PCB getProcessByPid(int pid) {
         for (PCB pcb : processes) {
             if (pcb.getPid() == pid) {
                 return pcb;
