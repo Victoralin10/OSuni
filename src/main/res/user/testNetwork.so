@@ -1,0 +1,7 @@
+# name: TestNetwork
+# size: 50MB
+print "Starting testNetwork"
+netUpload google.com 2Mb
+netDownload google.com 2Mb
+print "Program1 end"
+end

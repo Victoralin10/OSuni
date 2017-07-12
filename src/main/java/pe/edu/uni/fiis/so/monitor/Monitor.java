@@ -181,7 +181,7 @@ public class Monitor extends javax.swing.JFrame {
                         processTable.setValueAt("waiting", pid - 1, 3);
                         break;
                     case PCB.FINISHED:
-                        String er = event.getBolean("errored")?"|error":"";
+                        String er = event.getBolean("finished")?"":"|error";
                         processTable.setValueAt("finished" + er, pid - 1, 3);
                         processTable.setValueAt(TimeParser.format(event.getLong("timestamp")), pid - 1, 9);
                         break;
@@ -247,6 +247,7 @@ public class Monitor extends javax.swing.JFrame {
         jMenuItem2 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Monitor");
 
         jLabel7.setFont(new java.awt.Font("Dialog", 1, 48)); // NOI18N
         jLabel7.setText("Time:");

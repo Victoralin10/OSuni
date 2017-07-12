@@ -7,8 +7,8 @@ import pe.edu.uni.fiis.so.simulation.process.interrupts.NetworkInterruption;
  * Created by vcueva on 7/11/17.
  */
 public class NetworkServiceRequest {
-    public final int NET_UPLOAD = 1;
-    public final int NET_DOWNLOAD = 2;
+    public static final int NET_UPLOAD = 1;
+    public static final int NET_DOWNLOAD = 2;
 
     private NetworkInterruption interruption;
     private PCB pcb;

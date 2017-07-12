@@ -159,6 +159,10 @@ public class Syscall {
             process.setCode(code);
             myPcb.setProcess(process);
 
+            if (process.getSize() > kernel.getMachine().getMemory().getFreeMemorySize()) {
+                throw new Exception("Insuficient memory");
+            }
+
             long velr = GlobalConfig.getLong("disc.readSpeed", 50<<20);
             List<Integer> pageTable;
             _sleep((1000*process.getSize()) / velr, cpu);
@@ -241,6 +245,7 @@ public class Syscall {
         if (t + 10 > maxTime) {
             _sleep(maxTime - 10, cpu);
             memory.put("avance", ava + v*(maxTime - 10));
+            pcb.getProgramCounter().setDelta(0);
         } else {
             _sleep(t, cpu);
             memory.put("state", 0);
@@ -262,13 +267,10 @@ public class Syscall {
         if (!memory.containsKey("state")) {
             memory.put("state", 0);
         }
-        if (!memory.containsKey("avance")) {
-            memory.put("avance", 0);
-        }
 
         NetworkServiceRequest peek = nsq.peek();
         if (memory.get("state").equals(0)) {
-            memory.put("avance", 0);
+            memory.put("avance", 0L);
             memory.put("state", 1);
         }
         long ava = (long) memory.get("avance");
@@ -284,10 +286,10 @@ public class Syscall {
         if (t > maxTime - 10) {
             _sleep(maxTime - 10, cpu);
             memory.put("avance", ava + v*(maxTime - 10));
+            pcb.getProgramCounter().setDelta(0);
         } else {
             _sleep(t, cpu);
             memory.put("state", 0);
-            memory.put("avance", 0);
             peek.getInterruption().setInterruptionResult(InterruptionConstantes.SUCCESS);
             peek.getInterruption().markAsResolved();
             nsq.poll();
@@ -380,6 +382,83 @@ public class Syscall {
         }
 
         return 5;
+    }
+
+    public int netUpload(Cpu cpu, PCB pcb, ArrayList<String> args, Integer maxTime) {
+        if (args.size() <= 1) {
+            pcb.getProcess().setErrored(true);
+            return 2;
+        }
+        InterruptionInterface inte = pcb.getProcess().getInterruption();
+        if (inte != null) {
+            pcb.getProcess().setInterruption(null);
+            return 3;
+        } else {
+            NetworkInterruption nInte = new NetworkInterruption();
+            NetworkServiceRequest req = new NetworkServiceRequest(nInte, pcb,
+                    NetworkServiceRequest.NET_UPLOAD, args.get(0),
+                    SizeParser.parse(args.subList(1, args.size())));
+
+            pcb.getProcess().setInterruption(nInte);
+            pcb.getProcess().setInterrupted(true);
+            kernel.getNetworkServiceQueue().add(req);
+        }
+
+        return 5;
+    }
+
+    public int netDownload(Cpu cpu, PCB pcb, ArrayList<String> args, Integer maxTime) {
+        if (args.size() <= 1) {
+            pcb.getProcess().setErrored(true);
+            return 2;
+        }
+        InterruptionInterface inte = pcb.getProcess().getInterruption();
+        if (inte != null) {
+            pcb.getProcess().setInterruption(null);
+            return 3;
+        } else {
+            NetworkInterruption nInte = new NetworkInterruption();
+            NetworkServiceRequest req = new NetworkServiceRequest(nInte, pcb,
+                    NetworkServiceRequest.NET_DOWNLOAD, args.get(0),
+                    SizeParser.parse(args.subList(1, args.size())));
+
+            pcb.getProcess().setInterruption(nInte);
+            pcb.getProcess().setInterrupted(true);
+            kernel.getNetworkServiceQueue().add(req);
+        }
+
+        return 5;
+    }
+
+    public int run(Cpu cpu, PCB pcb, ArrayList<String> args, Integer maxTime) {
+        if (args.size() == 0) {
+            pcb.getProcess().setErrored(true);
+            return 2;
+        }
+
+        Map<String, Object> memory = pcb.getProcess().getMemory();
+        if (!memory.containsKey("state")) {
+            memory.put("state", 0);
+        }
+
+        if (memory.get("state").equals(0)) {
+            memory.put("state", 1);
+            memory.put("avance", 0L);
+        }
+
+        long ava = (long) memory.get("avance");
+        long left = TimeParser.parse(args) - ava;
+        if (left > maxTime - 10) {
+            _sleep(maxTime - 10, cpu);
+            memory.put("avance", left + maxTime - 10);
+            pcb.getProgramCounter().setDelta(0);
+            return 10;
+        } else {
+            _sleep(left, cpu);
+            memory.put("state", 0);
+        }
+
+        return 10;
     }
 
     private void _sleep(long t, Cpu cpu) {

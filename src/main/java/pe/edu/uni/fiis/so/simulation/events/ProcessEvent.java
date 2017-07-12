@@ -13,7 +13,7 @@ public class ProcessEvent extends SimulationEvent {
         putValue("cpu", pcb.getCpuNumber());
         if (pcb.getProcess() != null) {
             putValue("name", pcb.getProcess().getName());
-            putValue("errored", pcb.getProcess().isErrored());
+            putValue("finished", pcb.getProcess().isFinished());
         } else {
             putValue("name", "untitled");
         }
