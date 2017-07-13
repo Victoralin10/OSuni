@@ -1,5 +1,5 @@
 # name: System
-# size: 100MB
+# size: 500MB
 print "Starting Kernel"
 runSysExe memory.so
 runSysExe disk.so

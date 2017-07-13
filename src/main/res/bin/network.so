@@ -1,5 +1,5 @@
 # name: NetworkService
-# size: 10MB
+# size: 100MB
 print "Starting Network Manger"
 loop:
 networkService
