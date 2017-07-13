@@ -126,7 +126,7 @@ public class Monitor extends javax.swing.JFrame {
             row[0] = i;
             row[1] = "free";
             row[2] = -1;
-            row[3] = pageSize*i;
+            row[3] = String.format("0x%016X", pageSize*i);
             dtm.addRow(row);
         }
 
