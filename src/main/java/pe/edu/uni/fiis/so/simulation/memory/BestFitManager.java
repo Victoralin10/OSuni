@@ -23,12 +23,12 @@ public class BestFitManager implements MemoryManagerInterface {
         }
 
         int[] map = memory.getMap();
-        int b = -1, s = (1<<30), c = 0, lb = -1;
+        int b = -1, s = (1 << 30), c = 0, lb = -1;
         for (int i = 0; i < memory.getTotalPages(); i++) {
             if (map[i] == -1) {
                 c++;
             } else {
-                if ((long)c*memory.getPageSize() >= size && c < s) {
+                if ((long) c * memory.getPageSize() >= size && c < s) {
                     b = lb + 1;
                     s = c;
                 }
@@ -37,7 +37,7 @@ public class BestFitManager implements MemoryManagerInterface {
             }
         }
 
-        if ((long)c*memory.getPageSize() >= size && c < s) {
+        if ((long) c * memory.getPageSize() >= size && c < s) {
             b = lb + 1;
         }
 

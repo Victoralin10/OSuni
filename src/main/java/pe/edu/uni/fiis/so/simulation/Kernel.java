@@ -117,10 +117,12 @@ public class Kernel {
             Simulation.getInstance().log("Cargando kernel en cpu" + cpu.getId());
             // memoryManager = new FirstFitManager(machine.getMemory());
             switch (GlobalConfig.getString("memory.policy", "firstFit")) {
-                case "bestFit": memoryManager = new BestFitManager(machine.getMemory());
-                        break;
-                case "worstFit": memoryManager = new WorstFitManager(machine.getMemory());
-                        break;
+                case "bestFit":
+                    memoryManager = new BestFitManager(machine.getMemory());
+                    break;
+                case "worstFit":
+                    memoryManager = new WorstFitManager(machine.getMemory());
+                    break;
                 default:
                     memoryManager = new FirstFitManager(machine.getMemory());
                     break;

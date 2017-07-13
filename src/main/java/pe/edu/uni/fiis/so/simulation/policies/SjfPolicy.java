@@ -26,7 +26,7 @@ public class SjfPolicy implements PolicyInterface {
         }
 
         PCB ans = null;
-        for (PCB pcb: readyQueue) {
+        for (PCB pcb : readyQueue) {
             if (ans == null) {
                 ans = pcb;
             } else if (ans.getAvgRunningTime() > pcb.getAvgRunningTime()) {

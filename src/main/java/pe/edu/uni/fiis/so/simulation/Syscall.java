@@ -1,7 +1,6 @@
 package pe.edu.uni.fiis.so.simulation;
 
 import pe.edu.uni.fiis.so.simulation.events.LogEvent;
-import pe.edu.uni.fiis.so.simulation.events.SimulationEvent;
 import pe.edu.uni.fiis.so.simulation.process.*;
 import pe.edu.uni.fiis.so.simulation.process.Process;
 import pe.edu.uni.fiis.so.simulation.process.interrupts.*;
@@ -17,8 +16,10 @@ import pe.edu.uni.fiis.so.util.TimeParser;
 
 import java.awt.*;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 
 /**
  * Created by vcueva on 6/28/17.
